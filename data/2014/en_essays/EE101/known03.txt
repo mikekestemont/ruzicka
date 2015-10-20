@@ -1,0 +1,168 @@
+﻿1	Introduction and method Have you ever wondered about how words come to life? 
+How are they actually formed? 
+My interest grew when I started to read about the different word processes. 
+There were a lot of them and I wanted to know more about it. 
+My aim with this essay is first to define the ways that new words can be formed, and than use this knowledge to see which process is the most common one in a random selection of words from the English language. 
+I am also going to see if I am able to find any specific patterns in this small investigation. 
+I mean patterns in frequencies of different kinds. 
+My intention is not to investigate the whole origin of a word, but only the latest change it has gone through. 
+When describing the different word processes or formations, I will not go too deep into the subject, but only give an overall picture of them.   
+The conclusions made from this paper can be seen as giving an overall view of how words are formed. 
+I point this out because we should be aware of the small number of words that I have investigated. 
+I also want you to know that it has been very hard to give the exactly right formation of a word. 
+The history is sometimes quite unclear and therefore it is not se easy to give a straight answer of a single process or the last process for that matter. 
+This makes it even harder to draw conclusions.   y method has been to randomly select 120 words from Longman's dictionary and to define how these words are formed. 
+You can find the results in appendix 2. 
+The selection of words from the dictionary is made by dividing the pages with the number of words that I were to define (1668/120 = ca 14) So I chose the first word on every 14 pages. 
+If it was "the letter E" or a prefix, I chose the following word. 
+I thereafter looked up the words in The Oxford English Dictionary in order to find out its origin. 
+As long as I do not state otherwise, the explanations about the different word processes in the next paragraph are taken from Yule.  
+2 The different word processes  2.1 	Coinage The first process I will describe is coinage. 
+This is when a totally new word is invented to give a name to something. 
+It has no relation at all with the meaning of the thing or action. 
+Examples are nylon, zipper and xerox. 
+It is one of the least common processes. 
+This is probably the same thing Barber describes(224) when he says that there is usually a name involved. 
+Either a name of the person who invented the new idea/thing or the name of the place will give birth to the new word. 
+We know bikini as a garment to wear on the beach, but it got its name from a Pacific atoll.   
+2.2 Loan-words The second way to form a word is borrowing, also called loan-words. 
+We simply adopt words from an other language without changing them or maybe only adapting them a little. 
+English has taken over a lot of words from other languages over the years but not so many in recent time according to Barber(267). 
+Examples are nation (French), piano (Italian), and robot (Czech). 
+There is also a variant of this type, called loan-translation or calque. 
+This means that the foreign word is directly translated to English. 
+The German word "öbermench" is translated to the English word "Superman". 
+Moreover, there is something called internal loaning described by Barber(225). 
+It is not very common but exists to some extent in Great Britain. 
+The example here comes from Scottish and the word bonny.   
+2.3 Compounding Compounding is one of the most common processes. 
+In this particular process the word is formed by putting two separate words together as one. 
+Quirk et al.'s definition is "a lexical unit consisting of more than one base" (1567), and they also say that the first base of the word normally modifies the second one. 
+The base can be defined as the root or the stem of a word. 
+It is a word that is stripped from all endings and extra letters, for example act in activate. 
+So a compound word can be sunburn and wastebasket. 
+If you look closer upon a compound word, you can see that it derives from different word classes. 
+It can be two nouns put together (N+N) as in daydream, a noun and a verb (N+V) as in sunrise, an adjective and a noun (Adj+N)as in greenhouse. 
+The variations are quite a few. 
+Barber states the double nouns as the most common one(183). 
+One feature in how to recognize a compound, according to Dobrovolsky et al.(154), is that it must take the tense and plural forms behind the last word. 
+You can not say many *roads map but you have to say many road maps.  
+I found two variants of compounding when reading Dobrovolsky et al., namely endocentric and exocentric. 
+They describe the endocentric compound as when the first base forms "a type of" the other base. 
+A cave man is a compound where cave defines the type of man. 
+The exocentric word is the opposite, where there is no such connection at all. 
+For example you have redneck, which is not a type of neck but a person whose opinions is similar to those of a communist. 
+An other example is birdbrain, and I guess you can figure that one out yourself.   
+2.4 Blending Now we have come to the forth process in how new words can be formed. 
+It is time for blending. 
+Blending is when you take the beginning of one word but finish it off with the end of an other like in smog (smoke and fog), brunch (breakfast and lunch) and bit (binary and digit). 
+The other night I heard a new one on a TV programme; futurniture (future and furniture).  
+2.5 Clipping The next method is called clipping or shortening which is when a word is reduced to a shorter form. 
+The phenomenon is common in casual speech but is often written out as a whole word in texts. 
+You recognize fax for facsimile, pub for public house, and vibes for vibrations. 
+It is also very often used on names, especially Liz which is short for Elisabeth. 
+The short-cut words seem to thrive in the educational environment; chem, exam, gym, math etc.  
+2.6 Backformation Yet an other process is backformation. 
+This is a special type of reduction where a word is shortened to form a word of a different function. 
+This is usually made from a noun into a verb; television - to televise, babysitter - to babysit, beggar - to beg. 
+Nouns ending with -er can form a verb for what that noun does; editor - to edit and worker - to work. 
+There is a special way of backformation used in Australian and British English called hypoconisms. 
+In this case you first reduce a word to one syllable and then add the endings -ie or -y. 
+Examples are movie from moving pictures, and telly from television.  
+2.7 Conversion The seventh word process is when the function of the word is changed but not the actual spelling of the word. 
+This is a common way of producing new words in the English language today. 
+The three most occurrent variants, according to Dobrovolsky et al., are A) when a noun makes a verb as in knife - to knife, B) when a verb makes a noun as in to take over - a takeover and C) when an adjective makes a verb as in empty - to empty.  
+2.8 Acronyms I can promise that you have come across this process named acronyms. 
+Dobrovolsky et al. say that they "are formed by taking the initial letters of some or all of the words in a phrase or title" (159). 
+You have probably heard VCR, CD and EU. 
+The words are usually written with capital letters, but some become so ordinary that we use them as any other word forgetting that they are actually acronyms. 
+Do you know that laser stands for light amplification by simulated emission of radiation or scuba for self-contained underwater breathing apparatus? 
+Organizations that think about marketing often organize the words so they can form an startling acronym. 
+For example we have WAR standing for Woman Against Rape.  
+2.9 Derivation or affixation The last process I present is derivation or affixation. 
+It is one of the most common ways to form new English words. 
+You can do this by putting an affix to the base of an existing word. 
+This affix will change the meaning and sometimes the category of the base word and form a new one. 
+Examples of a word formed by derivation are seller from sell(affix:-er) and incompetent from competent(affix:in-). 
+Dobrovolsky et al. make us aware of the fact that the new words formed by this process will sometimes take on a different meaning compared to the root(145). 
+We have the word comparable, which is closer to the meaning 'similar' than it is 'able to be compared'.   
+An affix is a small piece of a word that can not stand on its own. 
+It is either in the beginning of a word, called a prefix, or in the end of one, called a suffix. 
+Examples of those can be found in appendix 1. 
+You can also see that certain affixes form certain word classes. 
+There is actually one more affix called infix. 
+It is not used in any greater extent in the English language, but you can understand by the word that this is when you put an affix in the middle of a word.  
+Derivation can be very complex as my teacher Christine Johansson described. 
+Take the example activation. 
+It can be divided into act(root and verb) + ive(suffix which forms it into an adjective) + ate(suffix which forms it into a verb again) + tion(suffix which turns it into a noun).  
+2.10	Onomatopoeic words Their is also words called onomatopoeic, and this is not listed as a word-forming processes. 
+I guess that they are few and old and do therefore not come under the field of forming new words. 
+They echo the natural sounds which are made by the objects/actions referred to. 
+They are quite rare and can differ between languages. 
+Examples are cuckoo, buzz and splash.  
+3 Other things to keep in mind  The different processes can in some cases be found in the same word and do not always work separately. 
+If you say that a problem has snowballed, the word snowballed has gone through the processes of compounding and conversion. 
+First it was put together as a noun with snow + ball, and then it converted to a verb; a snowball - to snowball.   
+Barber(220) states that the three most common word processes used in the Later Modern Period are derivation, compounding and conversion.   
+4 The investigation  When I had made the table of the 120 words, listing the various ways they were formed, I ran them through a filter in various ways, testing the frequency. 
+What now follows is a result of what I found out of looking at these.(
+You can find the table in appendix 2.) 
+First a list of the frequencies of the word process in my selection:  27 Loan-words 24 Conversions 17 Compounds 16 Derivations 13 Late/Old English 10 Two alt. 
+Choices 4 Unknown/Uncertain 3 Acronyms 3 Double processes 2 Coinage 1 Onomatopoeic 120 Total  This is very close to what Barber stated when he said that derivation, conversion and compounding were the three most common ways to form new words today. 
+I am guessing that the loan-words are not forming so many new words at present time, and that they are mostly older ones from the time of French influence.   
+Looking at the loan-words, I found that half of them(16 out of 27) came from the French language and that they were mostly nouns(11 out of 16); conference and debris. 
+On the second place I could find Latin words with 6 out of 27; flagrant and lingo. 
+Otherwise there was each one word from Gaelic, Greek, Old Norse, Spanish and Urdu(language in India). 
+I want to point out that it sometimes was hard to state the right original language(especially between French and Latin), because there were often influences from different countries with similar spelling. 
+I found one internal loan-word from Gaelic in the word glen.  
+I have listed a word-process named Old English in my table. 
+This is not what I intended in the beginning. 
+However, these are words that I think must be among the very core of the vocabulary in England. 
+Words that are learnt long ago and so deeply printed in the Englishmen's mind that no loan-words or other processes could replace them. 
+They are words like; to grow, to see, a hunt, a play and warm.   
+The second most common formation was conversion with 24 words. 17 of them were verbs formed only on nouns. 
+Four of them were nouns formed on verbs. 
+Examples are to load, to roof and a push.   
+The compound words were summoned to a total of 17(out of 120), where one was the pronoun yourself. 
+The rest was a mixture of different combinations, but the three most frequent ones were Verb+Noun(5); clingfilm, Noun+Noun(4); dreamboat, and Adj+Noun (4); turbojet.   
+Affixation or derivation, as I have chosen to call it in my mini investigation, have 16 words represented among the 120. 
+Eight of them were adjectives and five of those were formed by adding the suffix -able; changeable. 
+Five of the derivated words were nouns and in three case they were formed by adding the suffix -er to the verb; follower. 
+I could also see that all three adverbs were formed in the same way, namely by adding -ly to the adjective; honestly.  
+I have not come across any word formed by the process of blending. 
+I have one word which I have categorized as a clipping together with compounding. 
+It is the word telex. 
+I could understand if some would like me to put this word under the blending process because of its mix between teleprinter and exchange. 
+Nevertheless, I state it as two shorted words put together. 
+In blending, you usually take the front of one word and put it together with the end of an other. 
+In telex you take both beginnings of the two words.   
+There were three acronyms to be found in my random selection of the words. 
+They were: E for Eastern, J for Joule and l for liter. 
+No words were found to be put under the form of backformation, but two were named by coinage. 
+They were cambric and zippo. 
+To my surprise, I found an onomatopoeic word in my collection. 
+It was "ahem", which is the written sound of a person clearing his/her throat.  
+Four words were stated as having an unknown or uncertain origin. 
+These are malarkey, gook, bunk and sterling. 
+The first two are some kind of American slang and probably quite new. 
+The two second words are older and we do not know anything for sure about them.  
+If you look a little closer on my table, you can find some words with double processes involved, namely RH factor, telex and foxhunter. 
+Furthermore, there are ten words where you have a choice of two formations. 
+We do not know which one was the last to form the word. 
+I can only say that from those ten, I found six with the same choice; derivation or loan. 
+We do not know if the word was borrowed as it was or if it is a loan which later on has been altered through a derivation.   
+5 Conclusions  To summon up, I would like to say that this has been an experience. 
+It was a really fun job and I only wish I had more time. 
+I have found that what Barber says is true. 
+The tree most common ways to form words are conversions, compounds and derivations. 
+I would anyway like to put your attention on the large number of loan-words, especially from the French language. 
+Interesting to see is also that the Old English words were those we use every day. 
+I were happy to find that three acronyms, two coinage and one onomatopoeic word in my random selection.   ost conversions consisted of verbs which were formed from nouns. 
+The compounds were usually V+N in my selection and not N+N as Barber stated as the most common. 
+When I came to the derivational affixes, I saw that -able, -er and -ly were among the most frequent ones. 
+I did not come across any backformations or blendings, but on the other hand I came across those with double processes. 
+The difficulty is somewhat seen in the words where you have a choice of two processes. 
+They were summoned up to a total ten words.  
+Sources  Barber Charles, 1993, The English Language: a historical introduction, Cambridge: Cambridge University Press   Bradley et al., 1989, The Oxford English Dictionary, 2nd ed., Oxford: Clarendon Press   Dobrovolsky et al., 1996, Contemporary Linguistics - An Introduction, London: Longman  Green Jonathan, 1999, The Cassell Dictionary of slang, Finland: WSOY  Quirk et. al., 1985, A Comprehensive Grammar of the English Language, London: Longman  Summers et al., 1995, Longmans dictionary of contemporary English, Barcelona: Cayfosa.  
+Yule George, 1996, The study of language, Cambridge: Cambridge University Press.(
+Chapter 1 & 7)
