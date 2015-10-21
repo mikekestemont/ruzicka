@@ -7,7 +7,6 @@ import numpy as np
 
 def load_pan_dataset(directory, ext='txt', encoding='utf8'):
     train_data, test_data = [], []
-
     for author in os.listdir(directory):
         path = os.sep.join((directory, author))
         if os.path.isdir(path):
@@ -20,7 +19,7 @@ def load_pan_dataset(directory, ext='txt', encoding='utf8'):
                     train_data.append((author, text))
     return train_data, test_data
 
-def load_ground_truth(filepath):
+def load_ground_truth(filepath, labels):
     ground_truth = {}
     for line in open(filepath).readlines():
         problem_id, outcome = line.strip().split()
@@ -29,7 +28,7 @@ def load_ground_truth(filepath):
         elif outcome == 'N':
             outcome = 0.0
         ground_truth[problem_id] = outcome
-    return ground_truth
+    return [ground_truth[l] for l in labels]
 
 def train_dev_split(train_X, train_y):
     # set rnd seed:
@@ -48,25 +47,21 @@ def train_dev_split(train_X, train_y):
     tmp_train_X = np.array([train_X[i] for i in range(train_X.shape[0]) if i not in dev_idxs])
     tmp_train_y = np.array([train_y[i] for i in range(train_X.shape[0]) if i not in dev_idxs])
     
-    dev_X, dev_y, dev_labels, dev_ground_truth = [], [], [], {}
+    dev_X, dev_y, dev_gt_scores = [], [], []
     for cnt, dev_idx in enumerate(dev_idxs):
         # create first same author-problem:
         dev_X.append(train_X[dev_idx])
         dev_y.append(train_y[dev_idx])
-        dev_label = 'same_'+str(cnt+1) # assign unique label for evaluation purposes
-        dev_labels.append(dev_label)
-        dev_ground_truth[dev_label] = 1.0
+        dev_gt_scores.append(1.0)
         # now create different-author problem with the same doc:
         dev_X.append(train_X[dev_idx])
         # select random other author:
         other_authors = [y for y in train_y if y != train_y[dev_idx]]
         dev_y.append(np.random.choice(other_authors))
-        dev_label = 'diff_'+str(cnt+1)
-        dev_labels.append(dev_label)
-        dev_ground_truth[dev_label] = 0.0
+        dev_gt_scores.append(0.0)
     dev_X = np.array(dev_X)
     
     return tmp_train_X, tmp_train_y, \
-           dev_X, dev_y, dev_labels, dev_ground_truth
+           dev_X, dev_y, dev_gt_scores
                          
     

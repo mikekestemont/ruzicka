@@ -13,7 +13,10 @@ class Verifier:
     def __init__(self, metric='manhattan', base=False,
                  nb_bootstrap_iter=0, random_state=1066,
                  rnd_prop=.5):
+        # some sanity checks:
         assert base in ('profile', 'instance')
+        assert (rnd_prop > 0.0) and (rnd_prop < 1.0)
+        assert metric in METRICS
         self.base = base
         self.nb_bootstrap_iter = nb_bootstrap_iter
         self.rnd = np.random.RandomState(random_state)
@@ -22,27 +25,36 @@ class Verifier:
 
     def fit(self, X, y):
         print('--- fitting ---')
+
         if self.base == 'profile':
+
+            # collect vectors for each training author:
             vecs_per_centroid = {}
             for vector, label in zip(X, y):
                 try:
                     vecs_per_centroid[label].append(vector)
                 except KeyError:
                     vecs_per_centroid[label] = [vector]
+
+            # convert to centroid (via mean method):
             for label, vecs in vecs_per_centroid.items():
-                vecs_per_centroid[label] = np.asarray(vecs).median(axis=0)
-                np.asarray(vecs).mean(axis=0).shape
+                vecs_per_centroid[label] = np.asarray(vecs).mean(axis=0)
+
+            # reinitialize train items:
             self.train_X, self.train_y = [], []
-            for label, c in vecs_per_centroid.items():
-                self.train_X.append(c)
+            for label, centroid in vecs_per_centroid.items():
+                self.train_X.append(centroid)
                 self.train_y.append(label)
-            self.train_X = np.asarray(self.train_X, dtype='float32')
-            self.train_y = np.asarray(self.train_y, dtype='int8')
+
         elif self.base == 'instance':
             self.train_X = X
             self.train_y = y
 
-    def distance_to_target_class(self, test_vector, target_int, train_X='NA'):
+        # make sure we work with numpy arrays:
+        self.train_X = np.asarray(self.train_X, dtype='float32')
+        self.train_y = np.asarray(self.train_y, dtype='int8')
+
+    def distance_to_targest_class(self, test_vector, target_int, train_X='NA'):
         if not isinstance(train_X, np.ndarray):
             train_X = self.train_X
         target_X = []
@@ -51,7 +63,6 @@ class Verifier:
                 target_X.append(vector)
         target_X = np.asarray(target_X, dtype='float32')
         distances = self.metric_fn(target_X, test_vector)
-        #distances = cdist(target_X, [test_vector], self.metric)
         if distances.shape[0] > 1:
             distance = np.mean(distances)
         else:
@@ -67,8 +78,6 @@ class Verifier:
                 target_X.append(vector)
         target_X = np.asarray(target_X, dtype='float32')
         distances = self.metric_fn(target_X, test_vector)
-        #distances = cdist(target_X, [test_vector], self.metric)
-        #min_idx = distances.argmin(axis=1)[0]
         min_idx = distances.argmin()
         return distances[min_idx], target_X[min_idx, :]
 
@@ -86,8 +95,6 @@ class Verifier:
         target_X = target_X[rnd_imposters_idxs, :]
         # calculate distance to the imposters:
         distances = self.metric_fn(target_X, test_vector)
-        #distances = cdist(target_X, [test_vector], self.metric)
-        #min_idx = distances.argmin(axis=1)[0]
         min_idx = distances.argmin()
         return distances[min_idx], target_X[min_idx, :]
 
@@ -102,9 +109,8 @@ class Verifier:
         if nb_imposters:
             imposter_idxs = self.rnd.randint(train_X.shape[0],
                                         size=nb_imposters)
-            train_X = train_X[imposter_idxs,:]
+            train_X = train_X[imposter_idxs, :]
         distances = self.metric_fn(target_X, test_vector)
-        #distances = cdist(target_X, [test_vector], self.metric)
         if distances.shape[0] > 1:
             distance = np.mean(distances)
         else:
@@ -156,6 +162,6 @@ class Verifier:
                     elif method == 'm2':
                         if (target_dist**2) < (_1 * _2):
                             bootstrap_score += (1.0 / self.nb_bootstrap_iter)
-                #dist = 1.0 - bootstrap_score # convert similarity to distance
+                
                 distances.append(bootstrap_score)
             return np.array(distances)

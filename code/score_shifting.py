@@ -30,7 +30,7 @@ class ScoreShifter:
         self.optimal_p2 = None
         self.step_size = step_size
 
-    def fit(self, scores, labels, ground_truth):
+    def fit(self, predicted_scores, ground_truth_scores):
         thresholds = np.arange(0.0, 1.0, self.step_size)
         nb_thresholds = thresholds.shape[0]
 
@@ -42,14 +42,11 @@ class ScoreShifter:
         # iterate over combinations:
         for i, j in permutations(range(nb_thresholds), 2):
             p1, p2 = thresholds[i], thresholds[j]
-            print(p1)
-            print(p2)
             if p1 <= p2:
-                corrected_scores = correct_scores(scores, p1=p1, p2=p2)
+                corrected_scores = correct_scores(predicted_scores, p1=p1, p2=p2)
                 acc_score, auc_score, c_at_1_score = \
                     pan_metrics(prediction_scores=corrected_scores,
-                                labels=labels,
-                                ground_truth=ground_truth)
+                                ground_truth_scores=ground_truth_scores)
                 auc_scores[i][j] = auc_score
                 c_at_1_scores[i][j] = c_at_1_score
                 both_scores[i][j] = auc_score*c_at_1_score

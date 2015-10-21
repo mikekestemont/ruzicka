@@ -10,36 +10,30 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import average_precision_score as ap
 from sklearn.metrics import recall_score, precision_score, f1_score
 
-def accuracy(prediction_scores, labels, ground_truth):
+def accuracy(prediction_scores, ground_truth_scores):
     acc = 0.0
-    for label, prediction_score in zip(labels, prediction_scores):
-        if (prediction_score >= 0.5) == (ground_truth[label] >= 0.5):
+    for gt_score, pred_score in zip(ground_truth_scores, prediction_scores):
+        if (pred_score >= 0.5) == (gt_score >= 0.5):
             acc += 1.0
-    return acc / float(len(labels))
+    return acc / float(len(prediction_scores))
 
-def auc(prediction_scores, labels, ground_truth):
-    probabilities = []
-    targets = []
-    for label, prediction_score in zip(labels, prediction_scores):
-        probabilities.append(prediction_score)
-        targets.append(ground_truth[label])
-    return roc_auc_score(targets, probabilities)
+def auc(prediction_scores, ground_truth_scores):
+    return roc_auc_score(ground_truth_scores, prediction_scores)
 
-def c_at_1(prediction_scores, labels, ground_truth):
-    n = float(len(labels))
-    nc = 0
-    nu = 0
-    for label, prediction_score in zip(labels, prediction_scores):
-        if prediction_score == 0.5:
+def c_at_1(prediction_scores, ground_truth_scores):
+    n = float(len(prediction_scores))
+    nc, nu = 0, 0
+    for gt_score, pred_score in zip(ground_truth_scores, prediction_scores):
+        if pred_score == 0.5:
             nu += 1
-        elif (prediction_score >= 0.5) == (ground_truth[label] >= 0.5):
+        elif (pred_score >= 0.5) == (gt_score >= 0.5):
             nc += 1.0
     return (nc + (nu * nc / n)) / n
 
-def pan_metrics(prediction_scores, labels, ground_truth):
-    return accuracy(prediction_scores, labels, ground_truth), \
-           auc(prediction_scores, labels, ground_truth), \
-           c_at_1(prediction_scores, labels, ground_truth)
+def pan_metrics(prediction_scores, ground_truth_scores):
+    return accuracy(prediction_scores, ground_truth_scores), \
+           auc(prediction_scores, ground_truth_scores), \
+           c_at_1(prediction_scores, ground_truth_scores)
 
 def SADPs_DADPs(dm, authors, trim_DADPs=True, random_state=1066):
     SADPs, DADPs = [], []
