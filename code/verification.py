@@ -138,7 +138,8 @@ class Verifier:
             cnt = 0
             for test_vector, target_int in zip(test_X, test_y):
                 cnt += 1
-                print('iter:', cnt)
+                if cnt % 10 == 0:
+                    print('\t - # test documents processed:', cnt, 'out of', len(test_y))
                 bootstrap_score = 0
                 for i in range(self.nb_bootstrap_iter):
                     # select random features:
