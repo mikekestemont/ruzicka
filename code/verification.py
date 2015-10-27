@@ -1,9 +1,9 @@
 from __future__ import print_function
 
 import numpy as np
-from scipy.spatial.distance import cdist
-from distance_metrics import minmax
 import tensor
+
+from sklearn.neighbors import NearestCentroid
 
 METRICS = {'manhattan' : tensor.get_manhattan_fn(),
            'euclidean' : tensor.get_euclidean_fn(),
@@ -17,6 +17,7 @@ class Verifier:
         assert base in ('profile', 'instance')
         assert (rnd_prop > 0.0) and (rnd_prop < 1.0)
         assert metric in METRICS
+
         self.base = base
         self.nb_bootstrap_iter = nb_bootstrap_iter
         self.rnd = np.random.RandomState(random_state)
@@ -24,35 +25,13 @@ class Verifier:
         self.metric_fn = METRICS[metric]
 
     def fit(self, X, y):
-        print('--- fitting ---')
+        if self.base == 'instance':
+            self.train_X = np.asarray(self.train_X)
+            self.train_y = np.asarray(self.train_y)
 
-        if self.base == 'profile':
-
-            # collect vectors for each training author:
-            vecs_per_centroid = {}
-            for vector, label in zip(X, y):
-                try:
-                    vecs_per_centroid[label].append(vector)
-                except KeyError:
-                    vecs_per_centroid[label] = [vector]
-
-            # convert to centroid (via mean method):
-            for label, vecs in vecs_per_centroid.items():
-                vecs_per_centroid[label] = np.asarray(vecs).mean(axis=0)
-
-            # reinitialize train items:
-            self.train_X, self.train_y = [], []
-            for label, centroid in vecs_per_centroid.items():
-                self.train_X.append(centroid)
-                self.train_y.append(label)
-
-        elif self.base == 'instance':
-            self.train_X = X
-            self.train_y = y
-
-        # make sure we work with numpy arrays:
-        self.train_X = np.asarray(self.train_X, dtype='float32')
-        self.train_y = np.asarray(self.train_y, dtype='int8')
+        elif self.base == 'profile':
+            self.train_X = NearestCentroid().fit(X, y).centroids_ # mean centroid
+            self.train_y = np.array(range(self.train_X.shape[0]))
 
     def distance_to_targest_class(self, test_vector, target_int, train_X='NA'):
         if not isinstance(train_X, np.ndarray):
@@ -85,6 +64,7 @@ class Verifier:
         if not isinstance(train_X, np.ndarray):
             train_X = self.train_X
         target_X = []
+        assert target_int in self.train_y
         for class_int, vector in zip(self.train_y, train_X):
             if class_int != target_int:
                 target_X.append(vector)
@@ -131,7 +111,7 @@ class Verifier:
                     distances.append(weighed_dist)
                 else:
                     distances.append(target_dist)
-            return self.distances_to_probabilities(distances=np.asarray(distances),
+            return self.distances_to_probabilities(distances=np.asarray(distances, dtype='float32'),
                                                    extremize=extremize)
         else:
             distances = []
@@ -155,14 +135,13 @@ class Verifier:
                                                                    target_int=target_int,
                                                                    train_X=impaired_train_X,
                                                                    nb_imposters=nb_imposters)
-                    _1 = self.metric_fn(np.asarray([closest_target]), closest_non_target)
-                    _2 = self.metric_fn(np.asarray([impaired_test_vector]), closest_non_target)
+                    #_1 = self.metric_fn(np.asarray([closest_target], dtype='float32'), closest_non_target)
+                    #_2 = self.metric_fn(np.asarray([impaired_test_vector], dtype='float32'), closest_non_target)
                     if method == 'm1':
                         if target_dist < non_target_dist:
                             bootstrap_score += (1.0 / self.nb_bootstrap_iter)
                     elif method == 'm2':
                         if (target_dist**2) < (_1 * _2):
-                            bootstrap_score += (1.0 / self.nb_bootstrap_iter)
-                
+                            bootstrap_score += (1.0 / self.nb_bootstrap_iter) 
                 distances.append(bootstrap_score)
-            return np.array(distances)
+            return np.array(distances, dtype='float32')

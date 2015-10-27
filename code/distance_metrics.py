@@ -2,7 +2,7 @@
 from numba import jit
 
 @jit
-def minmax(x, y):
+def pairwise_minmax(x, y):
     mins, maxs = 0.0, 0.0
     for i in range(x.shape[0]):
         a, b = x[i], y[i]

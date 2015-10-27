@@ -31,7 +31,7 @@ class ScoreShifter:
         self.step_size = step_size
 
     def fit(self, predicted_scores, ground_truth_scores):
-        thresholds = np.arange(0.0, 1.0, self.step_size)
+        thresholds = np.arange(0.05, 1.0, self.step_size)
         nb_thresholds = thresholds.shape[0]
 
         # intialize score containers:

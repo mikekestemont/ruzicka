@@ -14,7 +14,7 @@ def load_pan_dataset(directory, ext='txt', encoding='utf8'):
                 text = codecs.open(filepath, mode='r').read()
                 name = os.path.splitext(os.path.basename(filepath))[0]
                 if name == 'unknown':
-                    test_data.append    ((author, text))
+                    test_data.append((author, text))
                 elif name.startswith('known'):
                     train_data.append((author, text))
     return train_data, test_data
