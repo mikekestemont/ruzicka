@@ -1,6 +1,5 @@
 from __future__ import print_function
 from itertools import combinations
-from scipy.stats import ks_2samp
 import seaborn as sb
 import numpy as np
 from scipy.cluster.hierarchy import dendrogram, linkage
@@ -93,17 +92,6 @@ def evaluate_with_threshold(SADPs, DADPs, t, beta=2):
     sb.plt.ylabel('Score', fontsize=10)
     sb.plt.savefig("../output/thresholds.pdf")
     return f_score, precision, recall
-
-def distributions(SADPs, DADPs, filename='distributions.pdf'):
-    D, p = ks_2samp(SADPs, DADPs)
-    print("\t\t- KS: D = %s (p = %s)" %(D, p))
-    sb.plt.clf()
-    c1, c2 = sb.color_palette('Set1')[:2]
-    ax = sb.plt.gca()
-    ax.set_xlim([0, 1])
-    sb.kdeplot(DADPs, shade=True, legend=False, c=c1, ax=ax, lw=0.5)
-    sb.kdeplot(SADPs, shade=True, legend=False, c=c2, ax=ax, lw=0.5)
-    sb.plt.savefig('../output/'+filename)
 
 def dm_dendrogram(dm, authors, titles, metric, filename='distributions.pdf'):
     sb.plt.clf()

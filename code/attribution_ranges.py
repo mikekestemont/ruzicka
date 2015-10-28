@@ -16,7 +16,7 @@ corpus_dirs = ['../data/2014/du_essays',
                #'../data/2014/en_essays',
                #'../data/2014/en_novels',
               ]
-feature_ranges = range(100, 1000, 500)
+feature_ranges = range(1000, 100000, 5000)
 
 for corpus_dir in corpus_dirs:
     for vector_space in ('tf_std', 'tf_idf'):
@@ -24,7 +24,7 @@ for corpus_dir in corpus_dirs:
         sb.plt.clf()
         f, ax = plt.subplots(1,1)
         sb.set_style("darkgrid")
-        ax.set_ylim(.5, 1)
+        ax.set_ylim(.0, 1)
         for metric in ('minmax', 'euclidean'):
             scores = []
             for nb_feats in feature_ranges:
@@ -37,7 +37,7 @@ for corpus_dir in corpus_dirs:
                                                    metric = metric,
                                                    base = 'profile')
                 print('::::: Dev score ::::::')
-                print('Accuracy:', acc_score)
+                print('F1:', acc_score)
                 scores.append(acc_score)
             maxi_score = format(np.max(np.asarray(scores)), '.1f')
             maxi_pos = feature_ranges[np.argmax(scores)]
@@ -45,13 +45,13 @@ for corpus_dir in corpus_dirs:
                       xy=(maxi_pos, maxi_score), xycoords="data",
                       va="center", ha="left", fontsize=8,
                       bbox=dict(boxstyle="round,pad=0.6", fc="w"))
-            std = format(np.std(np.asarray(scores)), '.2f')
-            mean = format(np.mean(np.asarray(scores)), '.2f')
-            l = metric+'  ($\sigma$:'+std+', $\mu$:'+mean+')'
+            cv = np.std(scores)/np.mean(scores)
+            cv = format(cv, '.3f')
+            l = metric+' ($\sigma$/$\mu$ :'+cv+')'
             sb.plt.plot(feature_ranges, scores, label=l)
-        sb.plt.title(vector_space)
+        sb.plt.title(vector_space.replace('_', '-'))
         sb.plt.xlabel('# MFI')
-        sb.plt.ylabel('Accuracy')
+        sb.plt.ylabel('Weighted F1')
         sb.plt.legend(loc='best')
         c = os.path.basename(corpus_dir)
         sb.plt.savefig('../output/'+c+'_'+vector_space+'_attr.pdf')
