@@ -102,7 +102,7 @@ class Vectorizer:
     def __init__(self, mfi=100, ngram_type='word',
                  ngram_size=1, vocabulary=None,
                  vector_space='tf', lowercase=True,
-                 min_df=0.0, max_df=1.0, ignore=[]):
+                 min_df=0, max_df=1.0, ignore=[]):
         """
         Initialize the vectorizer by setting up a
         vectorization pipeline via sklearn as 
@@ -157,6 +157,7 @@ class Vectorizer:
         if vector_space not in ('tf', 'tf_scaled', 'tf_std', 'tf_idf', 'bin'):
             raise ValueError('Unsupported vector space model: %s' %(vector_space))
 
+        
         self.params = {'max_features': mfi,
                  'max_df': max_df,
                  'min_df': min_df,
@@ -172,28 +173,28 @@ class Vectorizer:
         elif ngram_type in ('char', 'char_wb'):
             self.params['analyzer'] = ngram_type
 
-        #n = Normalizer(norm="l2", copy=False)
+        n = Normalizer(norm="l2", copy=False)
 
         if vector_space == 'tf':
             self.params['use_idf'] = False
             v = TfidfVectorizer(**self.params)
-            self.transformer = Pipeline([('s1', v)])
+            self.transformer = Pipeline([('s1', v), ('s2', n)])
 
         elif vector_space == 'tf_std':
             self.params['use_idf'] = False
             v = TfidfVectorizer(**self.params)
             scaler = StdDevScaler()
-            self.transformer = Pipeline([('s1', v), ('s2', scaler)])
+            self.transformer = Pipeline([('s1', v), ('s2', scaler), ('s3', n)])
 
         elif vector_space == 'tf_idf':
             self.params['use_idf'] = True
             v = TfidfVectorizer(**self.params)
-            self.transformer = Pipeline([('s1', v)])
+            self.transformer = Pipeline([('s1', v), ('s2', n)])
 
         elif vector_space == 'bin':
             self.params['binary'] = True
             v = CountVectorizer(**self.params)
-            self.transformer = Pipeline([('s1', v)])
+            self.transformer = Pipeline([('s1', v), ('s2', n)])
 
     def fit(self, texts):
         """

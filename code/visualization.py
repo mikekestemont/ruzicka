@@ -2,7 +2,10 @@ from __future__ import print_function
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+from sklearn.cluster import AgglomerativeClustering
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
@@ -38,6 +41,23 @@ def pca(X, labels, ints, filename='../output/pca.pdf', feature_names=None):
     ax1.set_yticklabels([])
     ax1.set_yticks([])
     sns.plt.savefig(filename, bbox_inches=0)
+
+def clustermap(X, labels, outputfile='../output/clustermap.pdf', fontsize=5):
+    plt.clf()
+    # convert to pandas dataframe:
+    df = pd.DataFrame(data=X, columns=labels)
+    df = df.applymap(lambda x:int(x*1000)).corr()
+
+    # clustermap plotting:
+    cm = sns.clustermap(df)
+    ax = cm.ax_heatmap
+        # xlabels:
+    for idx, label in enumerate(ax.get_xticklabels()):
+        label.set_rotation('vertical')
+        label.set_fontname('Arial')
+        label.set_fontsize(fontsize)
+
+    cm.savefig(outputfile)
 
 def tsne(X, labels, ints, filename='../output/tsne.pdf'):
     tsne = TSNE(n_components=2)

@@ -1,8 +1,18 @@
-from itertools import product
+"""
+This script collects the optimal settings for each space-metric
+combinations and runs a test experiment with these settings on
+the test part of the corresponding dataset. Apart from creating
+results tables for each data set separately (auc, c@1, etc.),
+we carry out a significance test on the predictions returned
+by each verifier, using approximate randomization.
+"""
+
+from itertools import product, combinations
 import json
 import os
 import pandas as pd
 from experimentation import test_experiment
+import art
 
 settings = json.load(open('../output/best_train_params.json'))
 
@@ -13,6 +23,20 @@ for corpus_dir in settings:
         index.add(vsm)
         for metric in settings[corpus_dir][vsm]:
             columns.add(metric)
+
+def binarize(scores):
+    scs = []
+    for sc in scores:
+        if sc == 0.5:
+            scs.append('X')
+        elif sc < 0.5:
+            scs.append('N')
+        elif sc > 0.5:
+            scs.append('Y')
+    return scs
+
+def stringify(i):
+    return '+'.join(i[::-1]).replace('_', '-')
 
 for corpus_dir in settings:
     print('\t- '+corpus_dir)
@@ -27,11 +51,13 @@ for corpus_dir in settings:
     score_df = pd.DataFrame(index=sorted(index),
                       columns=sorted(columns))
     
-    test_results = {} # create an object to store actual scores in
+    test_results = {} # create an object to store predicted scores in
+    test_gt = {} # create an object to store ground thruth scores in
     for vsm in settings[corpus_dir]:
         print('\t\t+'+vsm)
         if vsm not in test_results:
             test_results[vsm] = {}
+            test_gt[vsm] = {}
         for metric in settings[corpus_dir][vsm]:
             print('\t\t\t* '+metric)
 
@@ -41,7 +67,8 @@ for corpus_dir in settings:
             mfi = settings[corpus_dir][vsm][metric]['mfi']
 
             # run the test experiment
-            dev_auc_score, dev_acc_score, dev_c_at_1_score, test_scores = \
+            dev_auc_score, dev_acc_score, dev_c_at_1_score, \
+            test_scores, test_gt_scores = \
                                     test_experiment(corpus_dir = corpus_dir+'/',
                                                    mfi = mfi,
                                                    vector_space = vsm,
@@ -52,7 +79,6 @@ for corpus_dir in settings:
                                                    nb_bootstrap_iter = 100,
                                                    rnd_prop = 0.5,
                                                    nb_imposters = 30,
-                                                   method = 'm1',
                                                    p1 = p1,
                                                    p2 = p2)
             auc_df.ix[vsm][metric] = dev_auc_score
@@ -61,6 +87,7 @@ for corpus_dir in settings:
             score_df.ix[vsm][metric] = dev_auc_score * dev_c_at_1_score
             # store the actual scores
             test_results[vsm][metric] = test_scores
+            test_gt[vsm][metric] = test_gt_scores
 
     # write away score tables:
     table_dir = '../output/tables/'
@@ -74,13 +101,35 @@ for corpus_dir in settings:
     score_df.to_csv(table_dir+corpus_name+'_score.csv')
 
     # now significance testing:
-    combs = sorted(['+'.join(i).replace('_', '-') for i in \
-                    product(index, columns)])
-    signif_df = pd.DataFrame(index=combs, columns=combs).fillna('')
+    combs = sorted([i for i in product(index, columns)])
+    str_combs = sorted([stringify(i) for i in combs])
+    signif_df = pd.DataFrame(index=str_combs, columns=str_combs).fillna('')
+    comb_combs = sorted([i for i in combinations(combs, 2)])
 
-    # fill tabele with significance tests:
+    for comb1, comb2 in comb_combs:
+        system1 = binarize(test_results[comb1[0]][comb1[1]])
+        system2 = binarize(test_results[comb2[0]][comb2[1]])
+        gold = binarize(test_gt[comb1[0]][comb1[1]])
+        
+        system1, system2, gold, common, common_gold = \
+                art.getdifference(system1, system2, gold)
+        s = art.labelingsignificance(gold, system1, system2, N=100000,
+                common=common, common_gold=common_gold,
+                verbose=False, training=None)
+        diff_f1 = s['accuracy']
+        s = ''
+        if diff_f1 < 0.001:
+            s = '***'
+        elif diff_f1 < 0.01:
+            s = '**'
+        elif diff_f1 < 0.05:
+            s = '*'
+        else:
+            s = '='
+        k1, k2 = stringify(comb1), stringify(comb2)
+        signif_df[k1][k2] = s
+        signif_df[k2][k1] = s
     
-    print(signif_df)
     signif_df.to_csv(table_dir+corpus_name+'_signif.csv')
 
 

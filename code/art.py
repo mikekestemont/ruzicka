@@ -28,14 +28,13 @@ DEPENDENCIES
     This script depends on confusionmatrix.py and combinations.py (www.clips.ua.ac.be/~vincent/software.html)
     and optionally scipy (www.scipy.org).
 
-Copyright (c) 2011 CLiPS. All rights reserved.
+Copyright (c) 2013 CLiPS. All rights reserved.
 
 # License: GNU General Public License, see http://www.clips.ua.ac.be/~vincent/scripts/LICENSE.txt
 '''
-__thesis__='''A script to carry out approximate randomization tests.'''
 __author__="Vincent Van Asch"
-__date__="December 2011"
-__version__="2.1"
+__date__="September 2013"
+__version__="3.0.3"
 __url__ = 'http://www.clips.ua.ac.be/~vincent/software.html'
 
 import sys, os, time
@@ -50,7 +49,7 @@ except ImportError:
 
 try:
     import confusionmatrix
-except ImportError, e:
+except ImportError:
     raise ImportError('''This script depends on confusionmatrix.py (www.clips.ua.ac.be/~vincent/software.html).
 Place the script in the same folder as the art.py script.''')
 
@@ -65,7 +64,7 @@ def loginfo(s):
     print >>sys.stderr, '%s: %s' %(time.strftime('%d/%m/%Y %H:%M:%S'), s)
 
 
-def fread(fname, index=None, sep=None):
+def fread(fname, index=None, sep=None, encoding='utf8'):
     '''Reads in files as lists.
     
     sep: feature separator
@@ -79,6 +78,7 @@ def fread(fname, index=None, sep=None):
         for l in f:
             line = l.strip()
             if line:
+                line = line.decode(encoding)
                 if index is None:
                     output.append(line)
                 else:
@@ -94,6 +94,24 @@ def fread(fname, index=None, sep=None):
     
     return output
 
+def strata_read(fname, sep=None, encoding='utf8'):
+    out={}
+    with open(os.path.abspath(os.path.expanduser(fname)), 'rU') as f:
+        for l in f:
+            line = l.strip().decode(encoding)
+            if line:
+                parts = line.split(sep)
+                stratum = parts[0]
+                group = parts[1]
+                data = [float(x) for x in parts[2:]]
+                
+                if stratum in out.keys():
+                    out[stratum][group] = data
+                else:
+                    out[stratum] = {group:data}
+                    
+    return out
+                
 
 MBTSEP = '\x13'
 def mbtread(fname, sep="<utt>"):
@@ -133,7 +151,7 @@ def readtraining(fname, index=-1, sep=None):
     return d
 
 def signtest(gold, system1, system2):
-    '''Sign test'''
+    '''Sign test for labeling accuracy'''
     assert len(gold) == len(system1) == len(system2)
     # Get all number where system1 is correct and the other false
     s1correct=0
@@ -151,16 +169,50 @@ def signtest(gold, system1, system2):
     # by 1 system
     total = s1correct+s2correct
     
+    # make sure we test the smallest because of
+    # bug with unequal N in binom_test
+    correct = min([s1correct, s2correct])
+    
+    try:
+        p = binom_test(correct, total)
+    except NameError:
+        raise NameError('Module scipy (www.scipy.org) was not imported.')
+             
+    return p
+    
+    
+def termsigntest(gold, system1, system2):
+    '''Sign test for term extraction recall'''
+    print >>sys.stderr, 'WARNING: this function has not been validated'
+    # True postives for only 1 system
+    s1correct=0
+    s2correct=0
+    fn=0
+    for t in gold:
+        if t in system1:
+            if t not in system2:
+                s1correct+=1
+        elif t in system2:
+            s2correct+=1
+        else:
+            fn +=1
+            
+    # The total number of predictions that are only correctly predicted
+    # by 1 system
+    total = s1correct+s2correct
+    
     try:
         p = binom_test(s1correct, total)
     except NameError:
         raise NameError('Module scipy (www.scipy.org) was not imported.')
                     
     return p
+    
                     
 
 def getscores(gold, system, training=None):
-    '''Takes a gold and system list and returns
+    '''
+    Takes a gold and system list and returns a dictionary with
     macro-recall, macro-precision, macro-f-score, micro-f-score, accuracy.
     If training is given it uses the class label counts from training to compute the scores.
     
@@ -173,24 +225,33 @@ def getscores(gold, system, training=None):
     Returns a dictionary:
         key: performance measure name
         value: performance score
-    
     '''
     # Get confusion matrix
     assert len(gold) == len(system)
     
-    cm = confusionmatrix.ConfusionMatrix()
-    if training:
-        cm._training = training
-        cm._trainingfile=True
-        
-    for g, s in zip(gold, system):
-        cm.update(g, s)
+    # light mode for speed
+    cm = confusionmatrix.ConfusionMatrix(light=True)
 
-    output={'macro-av. recall': cm.macrorecall(), \
-            'macro-av. precision': cm.macroprecision(), \
-            'macro-av. f-score': cm.macrofmeasure(), \
-            'micro-av. f-score': cm.microfmeasure(), \
-            'accuracy': cm.accuracy}
+    # Add training
+    if training:
+        for k, v in training.items():
+            for i in range(v):
+                cm.add_training([k])
+    
+    # Add data
+    for g, s in zip(gold, system):
+        cm.single_add(g, s)
+
+    output={'macro-av. recall': cm.averaged(level=confusionmatrix.MACRO, score=confusionmatrix.RECALL, training=bool(training)), \
+            'macro-av. precision': cm.averaged(level=confusionmatrix.MACRO, score=confusionmatrix.PRECISION, training=bool(training)), \
+            'macro-av. f-score': cm.averaged(level=confusionmatrix.MACRO, score=confusionmatrix.FSCORE, training=bool(training)), \
+            'micro-av. f-score': cm.averaged(level=confusionmatrix.MICRO, score=confusionmatrix.FSCORE, training=bool(training)), \
+            'micro-av. precision': cm.averaged(level=confusionmatrix.MICRO, score=confusionmatrix.PRECISION, training=bool(training)), \
+            'micro-av. recall': cm.averaged(level=confusionmatrix.MICRO, score=confusionmatrix.RECALL, training=bool(training)), \
+            'lfb-micro-av. f-score': cm.averaged(level=confusionmatrix.MICROt, score=confusionmatrix.FSCORE, training=bool(training)), \
+            'lfb-micro-av. precision': cm.averaged(level=confusionmatrix.MICROt, score=confusionmatrix.PRECISION, training=bool(training)), \
+            'lfb-micro-av. recall': cm.averaged(level=confusionmatrix.MICROt, score=confusionmatrix.RECALL, training=bool(training)), \
+            'accuracy': cm.accuracy()}
 
     return output
 
@@ -222,6 +283,39 @@ def getscoresmbt(gold, system, training=None):
                 correct+=1
                 
     return {'accuracy': correct/float(total)}
+    
+        
+def getscoresmbtmulti(gold, system, training=None, sep='_'):
+    '''Returns scores for mbt'''
+    # Create the yielder
+    def reader(gold, system):
+        for g,s in zip(gold, system):
+            g = g.split(MBTSEP)
+            s = s.split(MBTSEP)
+            assert len(g) == len(s)
+            
+            for gi, si in zip(g, s):
+                gi = set(gi.split(sep))
+                si = set(si.split('_'))
+                yield gi, si
+    r = reader(gold, system)
+            
+    cm = confusionmatrix.ConfusionMatrix(compute_none=True)
+    for g, p in r:
+        cm.add(list(g), list(p))
+        
+    out={}
+    for label in cm.labels:
+        out[label] = cm.fscore(label)
+
+    out['micro-fscore']=cm.averaged(level=confusionmatrix.MICRO, score=confusionmatrix.FSCORE)
+    
+    return out
+
+    
+
+def average(dumy, values, training=None):
+    return {'mean': sum(values)/float(len(values))}
         
 def teststatistic(gold, system1, system2, training=None, scoring=getscores, absolute=True):
     '''Takes all lists and returns the value for 5 test statistics:
@@ -237,24 +331,14 @@ def teststatistic(gold, system1, system2, training=None, scoring=getscores, abso
 
     # Compute the differences between system1 and system2
     diffs={}
-    for k in scores1.keys():
-        diff = scores1[k]-scores2[k]
+    for k in set(scores1.keys()+scores2.keys()):
+        diff = scores1.get(k, 0)-scores2.get(k, 0)
         if absolute: diff = abs(diff)
     
         diffs[k] = diff
     
     return diffs
-    
 
-def getpermutations(l):
-    '''Get all permutations of elements in l as a list of lists'''
-    n = len(l)
-    if n <= 1: return [l]
-    
-    # all permutations
-    permutations = [p[:i]+[l[0]]+p[i:] for i in xrange(n) for p in getpermutations(l[1:])]    
-            
-    return permutations
     
 def distribute(s):
     '''Distribute the elements of s randomly over 2 lists'''
@@ -296,12 +380,32 @@ def getprobabilities(ngecounts, N, add=1, verbose=False):
         names = probs.keys()
         names.sort()
         for name in names:
-            print '  %-20s: %.5g' %(name, probs[name])
+            print '  %-23s: %.5g' %(name, probs[name])
 
     return probs
 
 
-def exactlabelingsignificance(gold, system1, system2, verbose=False, training=None, scoring=getscores):
+def get_alternatives(l):
+    '''The length of the outputs'''
+    # number of bins
+    nbins = int(pow(2, l))
+
+    # Fill the bins
+    bins=[[] for i in range(nbins)]    
+    for i in range(l):
+        switchpoint = pow(2, i)
+        filler=False
+        for j, bin in enumerate(bins):
+            if not j%switchpoint:
+                filler = not filler
+            bin.append(int(filler))
+            
+    return bins
+    
+    
+
+
+def exactlabelingsignificance(gold, system1, system2, verbose=False, training=None, scoring=getscores, common=[], common_gold=[]):
     '''Carries out exact randomization'''
     # number of permutations
     N = pow(2, len(gold))
@@ -309,7 +413,7 @@ def exactlabelingsignificance(gold, system1, system2, verbose=False, training=No
     if N > 5000000: raise ValueError('The number of permutations is too big. Aborting.')
     
     # the reference test statitsics
-    refdiffs = teststatistic(gold, system1, system2, training=training, scoring=scoring)
+    refdiffs = teststatistic(gold+common_gold, system1+common, system2+common, training=training, scoring=scoring)
     
     # Get all combinations
     size = len(gold)
@@ -322,35 +426,26 @@ def exactlabelingsignificance(gold, system1, system2, verbose=False, training=No
     else:
         nom=1
     
-    for i in range(size+1):
-        # All combinations of different proportions of labels from system1 and system2
-        subset = [0 for j in range(i)] + [1 for j in range(size-i)]
-        
-        # All permutations but only unique permutations
-        permutations = getpermutations(subset)
-        alternatives=[]
-        for p in permutations:
-            if p not in alternatives:
-                alternatives.append(p)
+    alternatives = get_alternatives(size)
+    while alternatives:
+        alt = alternatives.pop()
+        count+=1
 
-        for alt in alternatives:
-            count+=1
+        shuffle1 = [systems[k][j] for j,k in enumerate(alt)]
+        shuffle2 = [systems[1-k][j] for j,k in enumerate(alt)]
+    
+        # the test statistics
+        diffs = teststatistic(gold+common_gold, shuffle1+common, shuffle2+common, training=training, scoring=scoring)
         
-            shuffle1 = [systems[k][j] for j,k in enumerate(alt)]
-            shuffle2 = [systems[1-k][j] for j,k in enumerate(alt)]
+        if verbose and not (count%nom): loginfo('Calculated permutation %d/%d' %(count, N))
         
-            # the test statistics
-            diffs = teststatistic(gold, shuffle1, shuffle2, training=training, scoring=scoring)
-            
-            if verbose and not (count%nom): loginfo('Calculated permutation %d/%d' %(count, N))
-            
-            for k in refdiffs.keys():
-                pseudo = diffs[k]
-                actual = refdiffs[k]
-                if pseudo >= actual:
-                    ngecounts[k] = ngecounts.get(k, 0) + 1
-                elif k not in ngecounts.keys():
-                    ngecounts[k]=0
+        for k in refdiffs.keys():
+            pseudo = diffs[k]
+            actual = refdiffs[k]
+            if pseudo >= actual:
+                ngecounts[k] = ngecounts.get(k, 0) + 1
+            elif k not in ngecounts.keys():
+                ngecounts[k]=0
                     
     assert count == N
     assert set(ngecounts.keys()) == set(refdiffs.keys())
@@ -360,7 +455,7 @@ def exactlabelingsignificance(gold, system1, system2, verbose=False, training=No
 
     return probs
 
-def labelingsignificance(gold, system1, system2, N=1000, verbose=False, training=None, scoring=getscores):
+def labelingsignificance(gold, system1, system2, N=1000, verbose=False, training=None, scoring=getscores, show_probs=True, common=[], common_gold=[]):
     '''Calculate approximate randomization test for class labeling experiments
     
     Returns the probabilities for accepting H0 for
@@ -370,7 +465,7 @@ def labelingsignificance(gold, system1, system2, N=1000, verbose=False, training
     N: number of iterations
     '''
     # the reference test statitsics
-    refdiffs = teststatistic(gold, system1, system2, training=training, scoring=scoring)
+    refdiffs = teststatistic(gold+common_gold, system1+common, system2+common, training=training, scoring=scoring)
     
     # start shuffling
     source = [[s1,s2] for s1,s2 in zip(system1, system2)]
@@ -390,7 +485,7 @@ def labelingsignificance(gold, system1, system2, N=1000, verbose=False, training
             shuffle2.append(preds[1])
             
         # the test statistics
-        diffs = teststatistic(gold, shuffle1, shuffle2, training=training, scoring=scoring)
+        diffs = teststatistic(gold+common_gold, shuffle1+common, shuffle2+common, training=training, scoring=scoring)
         
         # see whether the shuffled system performs better than the originals
         for k in refdiffs.keys():
@@ -416,7 +511,7 @@ def labelingsignificance(gold, system1, system2, N=1000, verbose=False, training
     assert set(ngecounts.keys()) == set(refdiffs.keys())
 
     # Calculate probabilities
-    probs=getprobabilities(ngecounts, N, add=1, verbose=True)
+    probs=getprobabilities(ngecounts, N, add=1, verbose=show_probs)
 
     return probs    
     
@@ -544,6 +639,49 @@ def termsignificance(gold, system1, system2, N=10000, verbose=False, absolute=Fa
     return probs
         
         
+        
+def getdifference(system1, system2, gold=None):
+    '''
+    Takes lists of labels and returns lists with only those
+    entries for which s1!=s2.
+    
+    If the list gold is given, it also returns only the gold labels
+    for those elements.
+    '''
+    new_system1=[]
+    new_system2=[]
+    new_gold=[]
+    
+    rest1=[]
+    rest2=[]
+    common_gold=[]
+    
+    G=True
+    if gold is None:
+        G=False
+        gold = system1[:]
+    
+    if len(system1) != len(system1) != len(gold): raise ValueError('Input lists should have the same length')
+    
+    for g, s1, s2 in zip(gold, system1, system2):
+        if s1!=s2:
+            new_system1.append(s1)
+            new_system2.append(s2)
+            
+            if G:
+                new_gold.append(g)
+        else:
+            rest1.append(s1)
+            rest2.append(s2)
+            common_gold.append(g)
+    
+    if not G: new_gold=[]
+    
+    assert rest1 == rest2
+    
+    return new_system1, new_system2, new_gold, rest1, common_gold 
+    
+        
 
 def main(gold, system1, system2, verbose=False, N=10000, exact_threshold=20, training=None, scoring=getscores):
     '''
@@ -554,12 +692,7 @@ def main(gold, system1, system2, verbose=False, N=10000, exact_threshold=20, tra
         raise ValueError('There should be an equal number of non-empty lines in each input file.')
     
     # Shuffle only those instances that have a different class label    
-    newgold=[]; news1=[]; news2=[]
-    for g, s1, s2 in zip(gold, system1, system2):
-        if s1 != s2:
-            newgold.append(g)
-            news1.append(s1)
-            news2.append(s2)
+    news1, news2, newgold, common, common_gold = getdifference(system1, system2, gold)
 
     if verbose:
         for i,s in enumerate([system1, system2]):
@@ -569,7 +702,7 @@ def main(gold, system1, system2, verbose=False, N=10000, exact_threshold=20, tra
             keys = scores.keys()
             keys.sort()
             for k in keys:
-                lines.append('  %-20s : %.4f' %(k, scores[k]))
+                lines.append('  %-23s : %.4f' %(k, scores[k]))
             
             print >>sys.stderr, '\n'.join(lines)
         print >>sys.stderr
@@ -579,17 +712,34 @@ def main(gold, system1, system2, verbose=False, N=10000, exact_threshold=20, tra
     gold = newgold
     system1 = news1
     system2 = news2
-    
+
     total_uniq = len(gold)
     
     # The number of instances with different predictions
     if verbose: loginfo('Found %d predictions that are different for the 2 systems' %(total_uniq))
+
+    # number of permutations
+    try:
+        np = pow(2, len(gold))
+    except OverflowError:
+        np = 1000000001
+    
+    if np > 1000000000:
+        loginfo('Number of permutations: more than 1,000,000,000')
+    else:
+        loginfo('Number of permutations: %d' %np)
+    if np <= N and total_uniq > exact_threshold:
+        loginfo('NOTE:')
+        loginfo('The number of permutations is lower than the number of shuffles.')
+        loginfo('You may want to calculate exact randomization. To do this')
+        loginfo('set option -t higher than %d.' %total_uniq)
+        
     
     if total_uniq <= exact_threshold:
-        if verbose: loginfo('This is equal of less than the %d predictions threshold: calculating exact randomization' %(exact_threshold))
-        probs = exactlabelingsignificance(gold, system1, system2, verbose=verbose, training=training, scoring=scoring)
+        if verbose: loginfo('This is equal or less than the %d predictions threshold: calculating exact randomization' %(exact_threshold))
+        probs = exactlabelingsignificance(gold, system1, system2, verbose=verbose, training=training, scoring=scoring, common=common, common_gold=common_gold)
     else:
-        probs = labelingsignificance(gold, system1, system2, N=N, verbose=verbose, training=training, scoring=scoring)
+        probs = labelingsignificance(gold, system1, system2, N=N, verbose=verbose, training=training, scoring=scoring, common=common, common_gold=common_gold)
 
     if verbose: loginfo('Done')
 
@@ -616,7 +766,7 @@ def main2(gold, system1, system2, verbose=False, N=1048576, absolute=True, exact
             keys = scores.keys()
             keys.sort()
             for k in keys:
-                lines.append('  %-20s : %.4f' %(k, scores[k]))
+                lines.append('  %-23s : %.4f' %(k, scores[k]))
             
             print >>sys.stderr, '\n'.join(lines)
         print >>sys.stderr
@@ -639,6 +789,95 @@ def main2(gold, system1, system2, verbose=False, N=1048576, absolute=True, exact
      
     return probs
 
+
+def main3(data, verbose=False, N=1048576, absolute=True):
+    '''For stratified shuffling'''
+    # The groups
+    scoring_func=average
+    groups = data[data.keys()[0]].keys()
+    groups.sort()
+    assert len(groups) == 2
+    
+    if verbose:
+        strata = data.keys()
+        strata.sort()
+        stext = 'a'
+        if len(strata) == 1: stext='um'
+        loginfo('Found %d strat%s: %s' %(len(data), stext, ', '.join(strata)))
+        loginfo('')
+        loginfo('Computing %d shuffles' %N)
+        loginfo('H0: there is no absolute difference between the means of %s and %s' %tuple(groups))
+    
+        loginfo('    Commonly, you reject H0 if the probability drops below')
+        loginfo('    a predefined significance level, e.g 0.05.')
+        loginfo('-'*50)
+    
+    systems={groups[0]:[], groups[1]:[]}
+    for stratum, d in data.items():
+        for g in groups:
+            systems[g] += d[g]
+    
+    if verbose:
+        print >>sys.stderr
+        for g in groups:
+            s = systems[g]
+            scores = scoring_func(None, s)
+            
+            lines=['Scores for group %s:' %(g)]
+            keys = scores.keys()
+            keys.sort()
+            for k in keys:
+                lines.append('  %-23s : %.4f' %(k, scores[k]))
+            
+            print >>sys.stderr, '\n'.join(lines)
+        print >>sys.stderr
+        loginfo('-'*50)
+
+    # Reference
+    refdiffs = teststatistic(None, systems[groups[0]], systems[groups[1]], training=None, scoring=average, absolute=absolute)
+
+    if N >= 10:
+        nom = int(N/10.0)
+    else:
+        nom=1
+
+    # Start shuffling
+    ngecounts={}
+    for i in range(N):
+        shuffled={}
+        for stratum, d in data.items():
+            values = d[groups[0]] + d[groups[1]]
+            n1 = len(d[groups[0]]) 
+            n2 = len(d[groups[1]])
+            labels = [groups[0]]*n1+ [groups[1]]*n2 
+
+            random.shuffle(labels)
+        
+            for l, v in zip(labels, values):
+                shuffled[l] = shuffled.get(l ,[]) + [v]
+        
+        # the test statistics
+        diffs = teststatistic(None, shuffled[groups[0]], shuffled[groups[1]], scoring=scoring_func, absolute=absolute)
+
+        # see whether the shuffled system performs better than the originals
+        for k in refdiffs.keys():
+            pseudo = diffs[k]
+            actual = refdiffs[k]
+            
+            if pseudo >= actual:
+                ngecounts[k] = ngecounts.get(k, 0) + 1
+            elif k not in ngecounts.keys():
+                ngecounts[k] = 0
+                
+        if verbose and not ((i+1)%nom):
+            loginfo('Calculated shuffle %d/%d' %(i+1, N))
+
+    assert set(ngecounts.keys()) == set(refdiffs.keys())
+        
+    # Calculate probabilities
+    probs = getprobabilities(ngecounts, N, add=1, verbose=True)
+
+    return probs
 
 
 # ========================================================================================================================
@@ -784,7 +1023,7 @@ TRAINING
     Because setting and not setting the -T option influences the way the performance scores are computed, this also 
     influences the reported probabilities.
     
-    See also NOTE from confusionmatrix.py: $ python confusionmatrix.py -h
+    See also from confusionmatrix.py: $ python confusionmatrix.py -V
     
 TERM EXTRACTION
     The default setup is to compute the significance for Timbl style output. Is is possible to use this script
@@ -820,16 +1059,31 @@ MBT
     except that the "instances" in the case of Mbt are complete sentences -- there is no shuffling at the
     token level because there are interdependencies between the token labels. 
     
+STRATIFIED SHUFFLING
+    It is also possible to reproduce the stratified shuffling example of Noreen 1989 (Section 2.7):
+    
+    $ ./art.py -v -n 999 transfer.data
+    
+    In which the format of transfer.data is 'stratum group values', like:
+        A transfer 2.0 3.0 2.2 2.1 2.2
+        A non-transfer 3.2 2.9 2.0 2.2 2.1 1.4
+        ...
+    
+    This option can also be used for the example in Section 2.1. Using ony one stratum.
+    
 NOTE
     No assumptions are made on the distribution of the performance scores. The only assumption that is made is
     that there are no inter-instance dependencies, i.e. knowing the class label of 1 instance should not help
     knowing the class label of another instance. This assumption is violated in the output from the memory-based
-    tagger (MBT).
+    tagger (MBT). This is the reason why the -m option shuffles at sentence level instead of token level.
     
 DEPENDENCIES
     This script depends on confusionmatrix.py and combinations.py (www.clips.ua.ac.be/~vincent/software.html)
     and optionally scipy (www.scipy.org).
     
+REFERENCES
+    Eric W. Noreen, Computer-intensive Methods for Testing Hypotheses: An Introduction, John Wiley & Sons, New York, NY, USA, 1989.
+    Alexander Yeh, More accurate tests for the statistical significance of result differences, in: Proceedings of the 18th International Conference on Computational Linguistics, Volume 2, pages 947-953, 2000.
 
 %s, %s
 ''' %(__version__, __author__, __date__)
@@ -884,7 +1138,13 @@ DEPENDENCIES
             Yeh()
             sys.exit(0)
             
-    if len(args) != 2:
+    if len(args) == 1:
+        data = strata_read(args[0], sep=sep)
+        loginfo('-'*50)
+        loginfo('Datafile: %s' %os.path.basename(args[0]))
+        main3(data, verbose=verbose, N=N)
+        sys.exit(0)
+    elif len(args) != 2:
         _usage()
         sys.exit(1)
             
@@ -893,11 +1153,11 @@ DEPENDENCIES
 
 
     if terms and not gold:
-        print >>sys.stderr, 'ERROR: when doing term significance testing a gold standard is needed (-c option)'
+        print >>sys.stderr, 'ERROR 2: when doing term significance testing a gold standard is needed (-c option)'
         sys.exit(1)
 
     if mbt and not gold:
-        print >>sys.stderr, 'ERROR: when doing MBT significance testing a gold standard is needed (-c option)'
+        print >>sys.stderr, 'ERROR 3: when doing MBT significance testing a gold standard is needed (-c option)'
         sys.exit(1)
 
     # Reading in the class labels 
@@ -918,13 +1178,13 @@ DEPENDENCIES
         try:
             goldlabels = fread(output1, index=-2, sep=sep)
         except IndexError:
-            print >>sys.stderr, 'ERROR: Is the feature separator set correctly? (option -s is currently "%s")' %str(sep)
+            print >>sys.stderr, 'ERROR 4: Is the feature separator set correctly? (option -s is currently "%s")' %str(sep)
             sys.exit(1)
         check = fread(output2, index=-2, sep=sep)
         
         if check != goldlabels:
             print check, goldlabels
-            print >>sys.stderr, 'ERROR: File %s and %s should have the same gold reference labels.' %(output1, output2)
+            print >>sys.stderr, 'ERROR 5: File %s and %s should have the same gold reference labels.' %(output1, output2)
             sys.exit(1)
         del check
         
@@ -932,7 +1192,7 @@ DEPENDENCIES
         check2 = fread(output2, index=(0,-1), sep=sep)
         
         if check1 != check2:
-            print >>sys.stderr, 'ERROR: File %s and %s should be exactly the same up until the predicted class label.' %(output1, output2)
+            print >>sys.stderr, 'ERROR 5: File %s and %s should be exactly the same up until the predicted class label.' %(output1, output2)
             sys.exit(1)
         del check1, check2
             
@@ -985,12 +1245,14 @@ DEPENDENCIES
     try:
         if gold and mbt:
             probs = main(goldlabels, system1, system2, verbose=verbose, N=N, exact_threshold=exact_threshold, training=None, scoring=getscoresmbt)
+            #probs = main(goldlabels, system1, system2, verbose=verbose, N=N, exact_threshold=exact_threshold, training=None, scoring=getscoresmbtmulti)
         elif gold and terms:
             probs = main2(goldlabels, system1, system2, N=N, verbose=verbose, absolute=absolute, exact_threshold=exact_threshold)
         else:
-            probs = main(goldlabels, system1, system2, verbose=verbose, N=N, exact_threshold=exact_threshold, training=training)
+            probs = main(goldlabels, system1, system2, verbose=verbose, N=N, exact_threshold=exact_threshold, training=training) #, scoring=getscoresmbtmulti)
     except Exception, e:
-        print >>sys.stderr, 'ERROR: %s' %(e.message)
+        raise
+        print >>sys.stderr, 'ERROR 1: %s' %(e.message)
         sys.exit(1)
     
                 

@@ -35,6 +35,11 @@ def pan_metrics(prediction_scores, ground_truth_scores):
            c_at_1(prediction_scores, ground_truth_scores)
 
 def SADPs_DADPs(dm, authors, trim_DADPs=True, random_state=1066):
+    """
+    Given the distance matrix `dm`, returns two tuples with the
+    distances between same-author and different-author documents
+    pairs. Scales both between the min and max of all distances.
+    """
     SADPs, DADPs = [], []
     idxs = range(len(authors))
     for idx1, idx2 in combinations(idxs, 2):
@@ -46,7 +51,13 @@ def SADPs_DADPs(dm, authors, trim_DADPs=True, random_state=1066):
     if trim_DADPs:
         np.random.RandomState(random_state).shuffle(DADPs)
         DADPs = DADPs[:len(SADPs)]
-    return np.asarray(SADPs), np.asarray(DADPs)
+
+    DPs = np.asarray(list(SADPs)+list(DADPs))
+    # scale the distances to 0-1:
+    min_dist, max_dist = np.min(DPs), np.max(DPs)
+    SADPs = (SADPs-min_dist) / (max_dist - min_dist)
+    DADPs = (DADPs-min_dist) / (max_dist - min_dist)
+    return SADPs, DADPs
 
 def evaluate(SADPs, DADPs, beta=2):
     y_true = np.asarray([0 for dp in DADPs]+[1 for dp in SADPs])
