@@ -119,7 +119,7 @@ for corpus_dir in corpus_dirs:
         sb.plt.xlabel('# MFI')
         sb.plt.ylabel('AUC $\cdot$ c@1')
         sb.plt.legend(loc='best')
-        c = os.path.basename(corpus_dir)
+        c = os.path.basename(corpus_dir[:-1])
         sb.plt.savefig('../output/'+c+'_'+vector_space+'.pdf')
 
 # dump best settings for reuse during testing:

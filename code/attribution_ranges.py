@@ -84,7 +84,7 @@ for corpus_dir in corpus_dirs:
         sb.plt.xlabel('# MFI')
         sb.plt.ylabel('Weighted F1')
         sb.plt.legend(loc='best')
-        c = os.path.basename(corpus_dir)
+        c = os.path.basename(corpus_dir[:-1])
         sb.plt.savefig('../output/'+c+'_'+vector_space+'_attr.pdf')
 
 
