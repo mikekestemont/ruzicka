@@ -23,11 +23,12 @@ sb.plt.rc('font', **font)
 
 # set hyperparameters:
 corpus_dirs = ['../data/2014/du_essays/',
+               #'../data/2014/gr_articles/'
                #'../data/2014/du_reviews',
                #'../data/2014/en_essays',
                #'../data/2014/en_novels',
               ]
-nb_experiments = 5
+nb_experiments = 20
 ngram_type = 'char'
 ngram_size = 4
 base = 'profile'
@@ -52,8 +53,8 @@ for corpus_dir in corpus_dirs:
                                     min_df = min_df,
                                     phase = 'train')
     print('\t > vocab size:', max_vocab_size)
-
-    for vector_space in ('tf_std', 'tf_idf'):
+    
+    for vector_space in ('tf_std', 'tf_idf', 'tf'):
         best_settings[corpus_dir][vector_space] = {}
 
         # new plot:
@@ -62,11 +63,10 @@ for corpus_dir in corpus_dirs:
         sb.set_style("darkgrid")
         ax.set_ylim(.0, 1)
 
-        for metric in ('minmax', 'euclidean'):
+        for metric in ('minmax', 'euclidean', 'manhattan'):
             scores, p1s, p2s = [], [], []
             feature_ranges = [int(r) for r in \
-                #np.linspace(30, max_vocab_size, num=nb_experiments)]
-                np.linspace(30, 10000, num=nb_experiments)]
+                np.linspace(30, max_vocab_size, num=nb_experiments)]
 
             for nb_feats in feature_ranges:
                 print('\t\t- nb feats:', nb_feats)
@@ -100,11 +100,11 @@ for corpus_dir in corpus_dirs:
             opt_p2 = p2s[opt_idx]
             best = {'score':opt_score, 'mfi':opt_mfi, 'p1':opt_p1, 'p2':opt_p2}
             best_settings[corpus_dir][vector_space][metric] = best
-
+            
             # annotate optimal score:
             an1 = ax.annotate(metric+"\nmax: "+format(opt_score, '.3f'),
                       xy=(opt_mfi, format(opt_score, '.3f')), xycoords="data",
-                      va="center", ha="left", fontsize=8,
+                      va="center", ha="left", fontsize=6,
                       bbox=dict(boxstyle="round,pad=0.6", fc="w"))
 
             # prepare legend label:
