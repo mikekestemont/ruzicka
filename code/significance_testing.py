@@ -80,7 +80,8 @@ for corpus_dir in settings:
                                                    rnd_prop = 0.5,
                                                    nb_imposters = 30,
                                                    p1 = p1,
-                                                   p2 = p2)
+                                                   p2 = p2,
+                                                   min_df=2)
             auc_df.ix[vsm][metric] = dev_auc_score
             acc_df.ix[vsm][metric] = dev_acc_score
             c_at_1_df.ix[vsm][metric] = dev_c_at_1_score
