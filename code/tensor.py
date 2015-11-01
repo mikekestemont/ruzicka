@@ -21,7 +21,7 @@ def get_minmax_fn():
     def minmax(vector1, vector2):
         comb = T.stack([vector1, vector2], axis=1)
         return 1.0 - ( T.sum(T.min(comb, axis=1)) / (T.sum(T.max(comb, axis=1)) + 1e-6) )
-
+    
     distances, updates = theano.scan(fn=minmax,
                             outputs_info=None,
                             sequences=matrix,
