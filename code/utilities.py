@@ -31,7 +31,7 @@ def load_pan_dataset(directory, ext='txt', encoding='utf8'):
 def get_vocab_size(corpus_dir,
                   ngram_type,
                   ngram_size,
-                  min_df,
+                  min_df=0.0,
                   phase='train'):
     """
     Fits a vectorizer on the train data under `corpus_dir`,
