@@ -70,9 +70,9 @@ class Verifier:
         if not self.nb_bootstrap_iter: # naive verification:
             for test_vector, target_int in zip(test_X, test_y):
                     target_dist = self.dist_closest_target(test_vector=test_vector,
-                                                            target_int=target_int)
+                                                           target_int=target_int)
                     non_target_dist = self.dist_closest_non_target(test_vector=test_vector,
-                                                            target_int=target_int)
+                                                           target_int=target_int)
                     if target_dist < non_target_dist:
                         distances.append(1.0)
                     else:
@@ -96,8 +96,8 @@ class Verifier:
 
                     # get distance to closest (non) target:
                     target_dist = self.dist_closest_target(test_vector=impaired_test_vector,
-                                                               target_int=target_int,
-                                                               train_X=impaired_train_X)
+                                                           target_int=target_int,
+                                                           train_X=impaired_train_X)
                     non_target_dist = self.dist_closest_non_target(test_vector=impaired_test_vector,
                                                                    target_int=target_int,
                                                                    train_X=impaired_train_X,
