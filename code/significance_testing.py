@@ -11,8 +11,8 @@ from itertools import product, combinations
 import json
 import os
 import pandas as pd
-from experimentation import test_experiment
-import art
+from ruzickza.experimentation import test_experiment
+import ruzickza.art as art
 
 settings = json.load(open('../output/best_train_params.json'))
 

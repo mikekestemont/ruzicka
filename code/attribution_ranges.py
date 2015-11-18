@@ -14,19 +14,19 @@ import matplotlib.pyplot as plt
 import seaborn as sb
 import numpy as np
 from mpl_toolkits.axes_grid.anchored_artists import AnchoredText
-from experimentation import attribution_experiment
-from utilities import get_vocab_size
+from ruzicka.experimentation import attribution_experiment
+from ruzicka.utilities import get_vocab_size
 
 # set shared hyperparameters:
 corpus_dirs = ['../data/2014/du_essays/',
-               #'../data/2014/du_reviews',
-               #'../data/2014/en_essays',
-               #'../data/2014/en_novels',
+               '../data/2014/en_essays/',
+               '../data/2014/sp_articles/',
+               '../data/2014/gr_articles/',
               ]
-nb_experiments = 30 # nb of different feature ranges tested
+nb_experiments = 3 # nb of different feature ranges tested
 ngram_type = 'char'
 ngram_size = 4
-base = 'profile'
+base = 'instance'
 min_df = 2
 
 for corpus_dir in corpus_dirs:

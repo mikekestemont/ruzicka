@@ -28,7 +28,7 @@ corpus_dirs = ['../data/latin/dev',
                #'../data/2014/en_essays',
                #'../data/2014/en_novels',
               ]
-nb_experiments = 5
+nb_experiments = 10
 ngram_type = 'char'
 metric = 'minmax'
 ngram_size = 4

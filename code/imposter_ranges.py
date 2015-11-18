@@ -12,29 +12,32 @@ import os
 import json
 import pickle
 import matplotlib
+matplotlib.use('Agg') # Must be before importing matplotlib.pyplot or pylab!
 import matplotlib.pyplot as plt
+
 import seaborn as sb
 import numpy as np
 from mpl_toolkits.axes_grid.anchored_artists import AnchoredText
-from experimentation import dev_experiment
-from utilities import get_vocab_size
+from ruzicka.experimentation import dev_experiment
+from ruzicka.utilities import get_vocab_size
 font = {'family' : 'arial', 'size' : 6}
 sb.plt.rc('font', **font)
 
 # set hyperparameters:
 corpus_dirs = ['../data/2014/du_essays/',
-               #'../data/2014/gr_articles/'
-               #'../data/2014/du_reviews',
-               #'../data/2014/en_essays',
-               #'../data/2014/en_novels',
+               '../data/2014/gr_articles/',
+               '../data/2014/sp_articles/',
+               #'../data/2014/du_reviews/',
+               #'../data/2014/en_essays/',
+               #'../data/2014/en_novels/',
               ]
-nb_experiments = 20
+nb_experiments = 10
 ngram_type = 'char'
 ngram_size = 4
-base = 'profile'
+base = 'instance'
 nb_bootstrap_iter = 100
 rnd_prop = 0.5
-min_df = 2
+min_df = 1
 nb_imposters = 30
 
 # create a dict, where we store the
@@ -55,6 +58,7 @@ for corpus_dir in corpus_dirs:
     print('\t > vocab size:', max_vocab_size)
     
     for vector_space in ('tf_std', 'tf_idf', 'tf'):
+        print('\t +++', vector_space)
         best_settings[corpus_dir][vector_space] = {}
 
         # new plot:
@@ -63,13 +67,14 @@ for corpus_dir in corpus_dirs:
         sb.set_style("darkgrid")
         ax.set_ylim(.0, 1)
 
-        for metric in ('minmax', 'euclidean', 'manhattan'):
+        for metric in ('manhattan', 'minmax', 'euclidean'):
+            print('\t\t>>>', metric)
             scores, p1s, p2s = [], [], []
-            feature_ranges = [int(r) for r in \
-                np.linspace(30, max_vocab_size, num=nb_experiments)]
+            feature_ranges = [int(i) for i in np.linspace(100, max_vocab_size, nb_experiments)]
+            print(feature_ranges)
 
             for nb_feats in feature_ranges:
-                print('\t\t- nb feats:', nb_feats)
+                print('\t\t\t- nb feats:', nb_feats)
                 dev_auc_score, dev_acc_score, dev_c_at_1_score, opt_p1, opt_p2 = \
                                     dev_experiment(corpus_dir = corpus_dir+'/',
                                                    mfi = nb_feats,
@@ -82,11 +87,7 @@ for corpus_dir in corpus_dirs:
                                                    nb_bootstrap_iter = nb_bootstrap_iter,
                                                    rnd_prop = rnd_prop,
                                                    nb_imposters = nb_imposters)
-                print('\t\t::::: Dev scores ::::::')
-                print('\t\tDev AUC:', dev_auc_score)
-                print('\t\tDev acc:', dev_acc_score)
-                print('\t\tDev c@1:', dev_c_at_1_score)
-                scores.append(dev_acc_score * dev_c_at_1_score)
+                scores.append(dev_auc_score * dev_c_at_1_score)
                 p1s.append(opt_p1)
                 p2s.append(opt_p2)
 
