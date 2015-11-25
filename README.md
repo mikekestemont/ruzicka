@@ -1,5 +1,7 @@
 # Ružička: Authorship Verification in Python
 
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+
 ## Introduction
 The code in this repository offers an implementation of a number of routines in authorship studies, with a focus on authorship verification in the General Impostor (GI) framework. It specifically aimed to compare the fairly novel "minmax" measure (introduced by M. Ružička) to a number of popular alternatives. The packages additionally offers a number of useful implementations of common vector space models and evaluation metrics. The code in this repository was used to produce the results in a paper which is currently under submission.
 
