@@ -6,6 +6,8 @@ from collections import Counter
 import numpy as np
 from vectorization import Vectorizer
 
+from sklearn.cross_validation import train_test_split
+
 def load_pan_dataset(directory, ext='txt', encoding='utf8'):
     """
     Loads the data from `directory`, which should hold subdirs
@@ -67,38 +69,48 @@ def load_ground_truth(filepath, labels):
         ground_truth[problem_id] = outcome
     return [ground_truth[l] for l in labels]
 
-def train_dev_split(train_X, train_y):
-    # set rnd seed:
-    np.random.seed(train_X.shape[0])
-    # select authors for which we have more than one training documents:
-    samplable_authors = [i for i, v in Counter(train_y).items() if v > 1]
-    # collect indexes of dev items which we will remove from train:
-    dev_idxs = []
-    for author in samplable_authors:
-        # select the index of a random text:
-        available_idxs = [i for i in range(len(train_y))
-                            if train_y[i] == author]
-        dev_idxs.append(np.random.choice(available_idxs))
-    
-    # tmp remove selected dev docs from training data:
-    tmp_train_X = np.array([train_X[i] for i in range(train_X.shape[0]) if i not in dev_idxs])
-    tmp_train_y = np.array([train_y[i] for i in range(train_X.shape[0]) if i not in dev_idxs])
-    
-    dev_X, dev_y, dev_gt_scores = [], [], []
-    for cnt, dev_idx in enumerate(dev_idxs):
-        # create first same author-problem:
-        dev_X.append(train_X[dev_idx])
-        dev_y.append(train_y[dev_idx])
-        dev_gt_scores.append(1.0)
-        # now create different-author problem with the same doc:
-        dev_X.append(train_X[dev_idx])
-        # select random other author:
-        other_authors = [y for y in train_y if y != train_y[dev_idx]]
-        dev_y.append(np.random.choice(other_authors))
-        dev_gt_scores.append(0.0)
-    dev_X = np.array(dev_X)
-    
-    return tmp_train_X, tmp_train_y, \
-           dev_X, dev_y, dev_gt_scores
+def train_dev_split(train_X, train_y, random_state=1027):
+    X_dev, X_test, y_dev, y_test = train_test_split(train_X, train_y,
+                                        test_size=.5,
+                                        random_state=random_state,
+                                        stratify=train_y)
+
+    test_gt_scores = []
+
+    # randomly select 1/2 of the idxs:
+    np.random.seed(random_state)
+    author_options = set(train_y)
+    rnd_idxs = np.random.choice(len(y_test), int(len(y_test)/2))
+
+    for idx, y in enumerate(y_test):
+        if idx in rnd_idxs:
+            # pick random other author:
+            real_author = y_test[idx]
+            other_authors = [a for a in author_options if a != real_author]
+            fake_author = np.random.choice(other_authors, 1)[0]
+            y_test[idx] = fake_author
+            # indicate it's a negative example:
+            test_gt_scores.append(0.0)
+        else:
+            test_gt_scores.append(1.0)
+
+    return X_dev, y_dev,\
+           X_test, y_test, test_gt_scores
+
+
+def binarize(scores):
+    scs = []
+    for sc in scores:
+        if sc == 0.5:
+            scs.append('X')
+        elif sc < 0.5:
+            scs.append('N')
+        elif sc > 0.5:
+            scs.append('Y')
+    return scs
+
+def stringify(i):
+    return '+'.join(i[::-1]).replace('_', '-')
+
                          
     

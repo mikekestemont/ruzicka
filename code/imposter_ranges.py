@@ -11,29 +11,27 @@ from __future__ import print_function
 import os
 import json
 import pickle
-import matplotlib
-matplotlib.use('Agg') # Must be before importing matplotlib.pyplot or pylab!
-import matplotlib.pyplot as plt
 
+import matplotlib
+import matplotlib.pyplot as plt
 import seaborn as sb
 import numpy as np
-from mpl_toolkits.axes_grid.anchored_artists import AnchoredText
+
 from ruzicka.experimentation import dev_experiment
 from ruzicka.utilities import get_vocab_size
-font = {'family' : 'arial', 'size' : 6}
-sb.plt.rc('font', **font)
+
 
 # set hyperparameters:
 corpus_dirs = ['../data/2014/du_essays/',
                '../data/2014/gr_articles/',
                '../data/2014/sp_articles/',
-               #'../data/2014/du_reviews/',
-               #'../data/2014/en_essays/',
-               #'../data/2014/en_novels/',
+               '../data/2014/du_reviews/',
+               '../data/2014/en_essays/',
+               '../data/2014/en_novels/',
               ]
-nb_experiments = 10
-ngram_type = 'char'
-ngram_size = 4
+nb_experiments = 20
+ngram_type = 'word'
+ngram_size = 1
 base = 'instance'
 nb_bootstrap_iter = 100
 rnd_prop = 0.5
@@ -93,7 +91,6 @@ for corpus_dir in corpus_dirs:
 
             # determine position of optimal AUC x c@1:
             opt_idx = np.argmax(scores)
-
             # store best settings:
             opt_mfi = feature_ranges[opt_idx]
             opt_score = scores[opt_idx]
@@ -101,17 +98,8 @@ for corpus_dir in corpus_dirs:
             opt_p2 = p2s[opt_idx]
             best = {'score':opt_score, 'mfi':opt_mfi, 'p1':opt_p1, 'p2':opt_p2}
             best_settings[corpus_dir][vector_space][metric] = best
-            
-            # annotate optimal score:
-            an1 = ax.annotate(metric+"\nmax: "+format(opt_score, '.3f'),
-                      xy=(opt_mfi, format(opt_score, '.3f')), xycoords="data",
-                      va="center", ha="left", fontsize=6,
-                      bbox=dict(boxstyle="round,pad=0.6", fc="w"))
-
-            # prepare legend label:
-            cv = np.std(scores)/np.mean(scores)
-            cv = format(cv, '.3f')
-            l = metric+' ($\sigma$/$\mu$ :'+cv+')'
+            opt_score = format(opt_score*100, '.2f')
+            l = metric+' ('+str(opt_score)+' @ '+str(opt_mfi)+')'
 
             # plot results:
             sb.plt.plot(feature_ranges, scores, label=l)

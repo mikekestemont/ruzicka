@@ -30,7 +30,7 @@ corpus_dirs = [#'../data/2014/du_essays/',
                '../data/2014/en_novels/',
               ]
 
-base = 'profile'
+base = 'instance'
 nb_bootstrap_iter = 100
 rnd_prop = 0.5
 min_df = 1

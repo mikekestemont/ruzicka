@@ -11,9 +11,9 @@ from __future__ import print_function
 from itertools import product, combinations
 import json
 import os
+import sys
 import pandas as pd
 from ruzicka.experimentation import test_experiment
-from ruzicka.utilities import binarize, stringify
 import ruzicka.art as art
 
 settings = json.load(open('../output/best_train_params.json'))
@@ -26,6 +26,19 @@ for corpus_dir in settings:
         for metric in settings[corpus_dir][vsm]:
             columns.add(metric)
 
+def binarize(scores):
+    scs = []
+    for sc in scores:
+        if sc == 0.5:
+            scs.append('X')
+        elif sc < 0.5:
+            scs.append('N')
+        elif sc > 0.5:
+            scs.append('Y')
+    return scs
+
+def stringify(i):
+    return '+'.join(i[::-1]).replace('_', '-')
 
 for corpus_dir in settings:
     print('\t- '+corpus_dir)
@@ -58,7 +71,7 @@ for corpus_dir in settings:
             dev_auc_score, dev_acc_score, dev_c_at_1_score, \
             test_scores, test_gt_scores = \
                                     test_experiment(corpus_dir = corpus_dir,
-                                                   mfi = mfi,
+                                                   mfi = sys.maxint,
                                                    vector_space = vsm,
                                                    ngram_type = 'word',
                                                    ngram_size = 1,
@@ -89,6 +102,7 @@ for corpus_dir in settings:
     c_at_1_df.to_csv(table_dir+corpus_name+'_c_at_1.csv')
     score_df.to_csv(table_dir+corpus_name+'_score.csv')
 
+    """
     # now significance testing:
     combs = sorted([i for i in product(index, columns)])
     str_combs = sorted([stringify(i) for i in combs])
@@ -118,8 +132,10 @@ for corpus_dir in settings:
         k1, k2 = stringify(comb1), stringify(comb2)
         signif_df[k1][k2] = s
         signif_df[k2][k1] = s
+
     
     signif_df.to_csv(table_dir+corpus_name+'_signif.csv')
+    """
 
 
 

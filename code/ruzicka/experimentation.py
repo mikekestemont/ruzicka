@@ -24,7 +24,7 @@ def attribution_experiment(corpus_dir, mfi, vector_space, min_df,
     """
     * Runs a naive attribution experiment on the texts
       in the train data.
-    * Returns the `weighted F1` after a leave-one-text-out
+    * Returns the `accuracy` after a leave-one-text-out
       validation experiment.
     * Because of this setup, we only include texts
       from authors which have at least two texts
@@ -61,8 +61,6 @@ def attribution_experiment(corpus_dir, mfi, vector_space, min_df,
 
     # only select texts from authors with more than 1 text:
     more_than_one = set(i for i,c in Counter(dev_train_y).items() if i > 1)
-    print(more_than_one)
-    print(len(more_than_one))
     train_X, train_y = [], []
     for i in range(dev_train_X.shape[0]):
         if dev_train_y[i] in more_than_one:
@@ -88,12 +86,9 @@ def attribution_experiment(corpus_dir, mfi, vector_space, min_df,
     cv = cross_validation.LeaveOneOut(nb_samples)
     predictions = cross_validation.cross_val_predict(clf,
                                dev_train_X, dev_train_y, cv=cv)
-    #weighted_f1 = f1_score(y_true = dev_train_y,
-    #                       y_pred = predictions,
-    #                       average='weighted')
-    weighted_f1 = accuracy_score(y_true = dev_train_y,
+    acc = accuracy_score(y_true = dev_train_y,
                            y_pred = predictions)
-    return weighted_f1
+    return acc
 
 
 def dev_experiment(corpus_dir, mfi, vector_space,
@@ -274,7 +269,7 @@ def test_experiment(corpus_dir, mfi, vector_space,
                nb_imposters, p1, p2, min_df):
     """
     * Runs verification experiment on train data only.
-    * Artifical: calculatesPAN metrics (auc, acc, c@1),
+    * Artifical: calculates PAN metrics (auc, acc, c@1),
       given the *optimal* p1/p2 found by the score shifter.
     * Returns: auc, acc, c@1, p1, p2
     """
