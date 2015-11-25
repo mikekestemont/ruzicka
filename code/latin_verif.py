@@ -105,5 +105,5 @@ ax = cm.ax_heatmap
 for idx, label in enumerate(ax.get_yticklabels()):
     label.set_rotation('horizontal')
     label.set_fontname('Arial')
-    label.set_fontsize(6)
-cm.savefig('test.pdf')
+    label.set_fontsize(5)
+cm.savefig('../output/latin_verif_heatmap.pdf')
