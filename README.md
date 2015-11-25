@@ -1,6 +1,6 @@
 # Ružička: Authorship Verification in Python
 
-![alt text](https://github.com/mikekestemont/ruzicka/blob/master/readme_ill1.pdf "Logo Title Text 1")
+![alt text](https://github.com/mikekestemont/ruzicka/files/44049/readme_ill1.pdf "Logo Title Text 1")
 
 ## Introduction
 The code in this repository offers an implementation of a number of routines in authorship studies, with a focus on authorship verification in the General Impostor (GI) framework. It specifically aimed to compare the fairly novel "minmax" measure (introduced by M. Ružička) to a number of popular alternatives. The packages additionally offers a number of useful implementations of common vector space models and evaluation metrics. The code in this repository was used to produce the results in a paper which is currently under submission.
@@ -8,7 +8,7 @@ The code in this repository offers an implementation of a number of routines in 
 ## Quickstart
 While the code in this repository was tailored towards our needs for a specific paper, we will include an IPython notebook, which will guide you through some of the main functionality offered. In the code, we try to offer full documentation in the form of docstrings.
 
-![alt text](https://github.com/mikekestemont/ruzicka/blob/master/readme_ill2.pdf "Logo Title Text 2")
+![alt text](https://github.com/mikekestemont/ruzicka/files/44050/readme_ill2.pdf "Logo Title Text 2")
 
 ## Data sets
 This repository includes 6 multilingual benchmark datasets for authorship verification (under `data/`), which were used as the official competition data in the 2014 track on authorship verification of the annual [PAN evaluation lab](http://www.uni-weimar.de/medien/webis/events/pan-14/pan14-web/) on uncovering plagiarism, authorship, and social software misuse. The [survey paper](http://www.uni-weimar.de/medien/webis/events/pan-14/pan14-papers-final/pan14-authorship-verification/stamatatos14-overview.pdf) by Stamatatos et al. provides detailed information on the provenance, structure and nature of these corpora (together with baselines figures etc.). The competition data for this competition covered the following text varieties:
