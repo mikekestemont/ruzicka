@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import math
+
 """
 Workhorse module, which contains the main distance functions
 used (minmax, manhattan, and euclidean). By setting
@@ -134,8 +136,8 @@ def euclidean(x, y, rnd_feature_idxs):
     for i in rnd_feature_idxs:
         z = x[i]-y[i]
         diff += (z * z)
-
-    return diff * diff
+    
+    return math.sqrt(diff)
 
 
 
