@@ -32,6 +32,32 @@ ngram_size = 4
 vsms = ('tf', 'tf_std', 'tf_idf', 'bin')
 dms = ('minmax', 'euclidean', 'cityblock')
 
+
+def SADPs_DADPs(dm, authors, trim_DADPs=True, random_state=1066):
+    """
+    Given the distance matrix `dm`, returns two tuples with the
+    distances between same-author and different-author documents
+    pairs. Scales both between the min and max of all distances.
+    """
+    SADPs, DADPs = [], []
+    idxs = range(len(authors))
+    for idx1, idx2 in combinations(idxs, 2):
+        author1, author2 = authors[idx1], authors[idx2]
+        if author1 == author2:
+            SADPs.append(dm[idx1][idx2])
+        else:
+            DADPs.append(dm[idx1][idx2])
+    if trim_DADPs:
+        np.random.RandomState(random_state).shuffle(DADPs)
+        DADPs = DADPs[:len(SADPs)]
+
+    DPs = np.asarray(list(SADPs)+list(DADPs))
+    # scale the distances to 0-1:
+    min_dist, max_dist = np.min(DPs), np.max(DPs)
+    SADPs = (SADPs-min_dist) / (max_dist - min_dist)
+    DADPs = (DADPs-min_dist) / (max_dist - min_dist)
+    return SADPs, DADPs
+
 # load the train data
 data, _ = load_pan_dataset(corpus_dir+'train')
 labels, documents = zip(*data)

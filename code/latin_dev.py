@@ -34,11 +34,6 @@ nb_imposters = 30
 mfi = 100000
 min_df = 2
 
-# write away score tables:
-table_dir = '../output/tables/'
-if not os.path.isdir(table_dir):
-    os.mkdir(table_dir)
-
 # preprocess:
 all_data, _ = load_pan_dataset(corpus_dir)
 all_labels, all_documents = zip(*all_data)

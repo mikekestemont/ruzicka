@@ -13,8 +13,11 @@ import json
 import os
 import pandas as pd
 from ruzicka.experimentation import test_experiment
-from ruzicka.utilities import binarize, stringify
+from ruzicka.utilities import binarize
 import ruzicka.art as art
+
+def stringify(i):
+    return '+'.join(i[::-1]).replace('_', '-')
 
 settings = json.load(open('../output/best_train_params.json'))
 
