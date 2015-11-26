@@ -1,3 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+
+Note: Legacy module which is not actually used any more,
+but which is potentially useful for future reference.
+Offers theano-implementations of the distance functions used,
+for calculating the pairwise distances between two vectors.
+
+"""
+
 import theano
 import theano.tensor as T
 

@@ -1,20 +1,16 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-
 import os
 import sys
-if sys.version_info[0] == 2:
-    import cPickle as pickle
-elif sys.version_info[0] == 3:
-    import pickle
 
+import scipy.sparse as sp
+import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.preprocessing import StandardScaler, Normalizer
-import scipy.sparse as sp
-import numpy as np
 
 def identity(y):
     """
