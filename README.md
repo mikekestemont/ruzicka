@@ -29,6 +29,11 @@ This code requires Python 2.7+ (Python 3 has not been tested). The repository is
 + scikit-learn
 + matplotlib
 + seaborn
++ numba
+
+and preferably (for GPU acceleration and/or JIT-compilation):
++ theano
++ numbapro
 
 We recommend installing Continuum's excellent [Anaconda Python framework](https://www.continuum.io/downloads), which comes bundled with most of these dependencies. Additionally, this code integrates a number of [scripts by Vincent van Asch](http://www.cnts.ua.ac.be/~vincent/software.html) to statistically compare the output of different classifiers, using Approximate Randomization Testing (under `ruzicka/`: `art.py`, `combinations.py` and `confusionmatrix.py`).
 
