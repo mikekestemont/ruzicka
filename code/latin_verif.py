@@ -14,7 +14,7 @@ import numpy as np
 
 from sklearn.preprocessing import LabelEncoder
 
-from ruzicka.utilities import binarize, stringify
+from ruzicka.utilities import binarize
 from ruzicka.vectorization import Vectorizer
 from ruzicka.utilities import load_pan_dataset, train_dev_split, get_vocab_size
 from sklearn.cross_validation import train_test_split
@@ -28,7 +28,7 @@ ngram_size = 1
 base = 'profile'
 vector_space = 'tf'
 metric = 'minmax'
-nb_bootstrap_iter = 1000
+nb_bootstrap_iter = 100
 rnd_prop = 0.5
 nb_imposters = 30
 mfi = 10000

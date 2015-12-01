@@ -20,7 +20,6 @@ import numpy as np
 from ruzicka.experimentation import dev_experiment
 from ruzicka.utilities import get_vocab_size
 
-
 # set hyperparameters:
 corpus_dirs = ['../data/2014/du_essays/',
                '../data/2014/gr_articles/',
@@ -29,7 +28,7 @@ corpus_dirs = ['../data/2014/du_essays/',
                '../data/2014/en_essays/',
                '../data/2014/en_novels/',
               ]
-nb_experiments = 20
+nb_experiments = 15
 ngram_type = 'word'
 ngram_size = 1
 base = 'instance'

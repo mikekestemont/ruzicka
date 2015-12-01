@@ -15,7 +15,7 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import precision_recall_curve
 
-from ruzicka.utilities import binarize, stringify
+from ruzicka.utilities import binarize
 from ruzicka.vectorization import Vectorizer
 from ruzicka.utilities import load_pan_dataset, train_dev_split, get_vocab_size
 from sklearn.cross_validation import train_test_split
@@ -27,11 +27,11 @@ import ruzicka.art as art
 corpus_dir = '../data/latin/dev'
 ngram_type = 'word'
 ngram_size = 1
-base = 'profile'
+base = 'instance'
 nb_bootstrap_iter = 100
 rnd_prop = 0.5
 nb_imposters = 30
-mfi = 100000
+mfi = 10000
 min_df = 2
 
 # preprocess:
@@ -137,7 +137,8 @@ for vector_space, metric in combs:
     precisions, recalls, thresholds = precision_recall_curve(test_gt_scores, test_test_scores)
     sb.plt.plot(recalls, precisions, label=vector_space+'+'+metric)
 
-sb.plt.legend(loc="best")
+plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+            ncol=3, mode="expand", borderaxespad=0., fontsize = 'xx-small')
 sb.plt.gca().set_aspect('equal', adjustable='box')
 sb.plt.savefig("../output/latin_dev_prec_rec.pdf")
 
@@ -188,5 +189,5 @@ for comb in combs:
 signif_df.columns = ['+'.join(i).replace('_', '-') for i in signif_df.columns]
 signif_df.index = ['+'.join(i).replace('_', '-') for i in signif_df.index]
 
-signif_df.to_csv(table_dir+'latin_dev_signif.csv')
+signif_df.to_csv('../output/tables/latin_dev_signif.csv')
 

@@ -13,22 +13,26 @@ to the interaction with bootstrapping in the GI framework.
 
 from __future__ import print_function
 import os
+
 import matplotlib.pyplot as plt
 import seaborn as sb
 import numpy as np
+
 from ruzicka.experimentation import attribution_experiment
 from ruzicka.utilities import get_vocab_size
 
 # set shared hyperparameters:
 corpus_dirs = ['../data/2014/du_essays/',
-               '../data/2014/sp_articles/',
                '../data/2014/gr_articles/',
+               '../data/2014/sp_articles/',
+               #'../data/2014/en_essays/', results too low to show interesting trends.
               ]
-nb_experiments = 3 # nb of different feature ranges tested
-ngram_type = 'char'
-ngram_size = 4
-base = 'instance'
-min_df = 2
+
+nb_experiments = 15 # nb of different feature ranges tested
+ngram_type = 'word'
+ngram_size = 1
+base = 'profile'
+min_df = 1
 
 for corpus_dir in corpus_dirs:
 
@@ -80,7 +84,7 @@ for corpus_dir in corpus_dirs:
         sb.plt.ylabel('Accuracy')
         sb.plt.legend(loc='best')
         c = os.path.basename(corpus_dir[:-1])
-        sb.plt.savefig('../output/'+c+'_'+vector_space+'_attr.pdf')
+        sb.plt.savefig('../output/'+c+'_'+vector_space+'_attr_'+base+'.pdf')
 
 
 

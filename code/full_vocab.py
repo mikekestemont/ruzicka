@@ -22,13 +22,12 @@ from ruzicka.experimentation import dev_experiment
 from ruzicka.utilities import get_vocab_size
 
 # set hyperparameters:
-corpus_dirs = [#'../data/2014/du_essays/',
-               #'../data/2014/gr_articles/',
-               #'../data/2014/sp_articles/',
+corpus_dirs = ['../data/2014/du_essays/',
+               '../data/2014/gr_articles/',
+               '../data/2014/sp_articles/',
                '../data/2014/du_reviews/',
                '../data/2014/en_essays/',
-               '../data/2014/en_novels/',
-              ]
+               '../data/2014/en_novels/']
 
 base = 'instance'
 nb_bootstrap_iter = 100
@@ -38,8 +37,7 @@ nb_imposters = 30
 
 feature_types = {'char 3-gram': ('char', 3),
                  'char 4-gram': ('char', 4),
-                 'word 1-gram': ('word', 1),
-                }
+                 'word 1-gram': ('word', 1)}
 
 for corpus_dir in corpus_dirs:
     print('>>> corpus:', corpus_dir)
