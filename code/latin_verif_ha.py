@@ -4,6 +4,7 @@ import os
 import time
 import json
 import pickle
+import glob
 from itertools import product, combinations
 
 import matplotlib
@@ -39,7 +40,7 @@ train_data, _ = load_pan_dataset('../data/latin/dev') # ignore unknown documents
 train_labels, train_documents = zip(*train_data)
 
 # get test data:
-test_data, _ = load_pan_dataset('../data/latin/test') # ignore unknown documents
+test_data, _ = load_pan_dataset('../data/latin/ha_test') # ignore unknown documents
 test_labels, test_documents = zip(*test_data)
 
 # fit encoder for author labels:
@@ -64,6 +65,16 @@ for test_author in sorted(set(test_ints)):
 
 proba_df = pd.DataFrame(columns=cols)
 
+# for ha: get labels
+ha_directory = '../data/latin/ha_test'
+labels = []
+for author in sorted(os.listdir(ha_directory)):
+    path = os.sep.join((ha_directory, author))
+    if os.path.isdir(path):
+        for filepath in sorted(glob.glob(path+'/*.txt')):
+            name = os.path.splitext(os.path.basename(filepath))[0]
+            labels.append((author+'-'+name))
+
 for idx in range(len(test_documents)):
     target_auth = test_ints[idx]
     target_docu = test_X[idx]
@@ -86,7 +97,8 @@ for idx in range(len(test_documents)):
     probas = verifier.predict_proba(test_X = tmp_test_X,
                                     test_y = tmp_test_y,
                                     nb_imposters = nb_imposters)
-    row = [label_encoder.inverse_transform([target_auth])[0]]
+    
+    row = [labels[idx]]
     row += list(probas)
     print(row)
     proba_df.loc[len(proba_df)] = row
@@ -97,7 +109,7 @@ proba_df = proba_df.set_index('label')
 table_dir = '../output/tables/'
 if not os.path.isdir(table_dir):
     os.mkdir(table_dir)
-proba_df.to_csv(table_dir+'latin_test_proba.csv')
+proba_df.to_csv(table_dir+'ha_latin_test_proba.csv')
 
 cm = sns.clustermap(proba_df)
 ax = cm.ax_heatmap
@@ -106,4 +118,4 @@ for idx, label in enumerate(ax.get_yticklabels()):
     label.set_rotation('horizontal')
     label.set_fontname('Arial')
     label.set_fontsize(5)
-cm.savefig('../output/latin_verif_heatmap.pdf')
+cm.savefig('../output/ha_verif_heatmap.pdf')
