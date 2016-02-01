@@ -6,13 +6,16 @@ alt="IMAGE ALT TEXT HERE" height="240" border="10"/>
 The code in this repository offers an implementation of a number of routines in authorship studies, with a focus on authorship verification. It is named after the inventor of the "minmax" measure (M. Ružička). The repository offers a generic implementation of two commonly used verification systems. The first system is an intrinsic verifier, depending on a first-order metric (O1), close to the one described in:
 
 ```
-Potha, N. and E. Stamatatos. A Profile-based Method for Authorship Verification In <i>Proc. of the 8th Hellenic Conference on Artificial Intelligence (SETN)</i>, LNCS, 8445, pp. 313-326, 2014.
+Potha, N. and E. Stamatatos. A Profile-based Method for Authorship Verification
+In Proc. of the 8th Hellenic Conference on Artificial Intelligence
+(SETN), LNCS, 8445, pp. 313-326, 2014.
 ```
 
 The second system is an extrinsic verifier with second-order metrics (O2), based the General Imposters framework as described in:
 
 ```
-M. Koppel and Y. Winter (2014), Determining if Two Documents are by the Same Author, <i>JASIST</i>, 65(1): 178-187.
+M. Koppel and Y. Winter (2014), Determining if Two Documents are by the Same
+Author, JASIST, 65(1): 178-187.
 ```
 
 The packages additionally offers a number of useful implementations of common vector space models and evaluation metrics. The code in this repository was used to produce the results in a paper which is currently under submission.
