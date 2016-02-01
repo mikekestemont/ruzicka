@@ -3,13 +3,26 @@
 ## Introduction
 <img align="right" src="https://cloud.githubusercontent.com/assets/4376879/11402489/8703f80a-9398-11e5-8091-2b1ed5b2bb97.png" 
 alt="IMAGE ALT TEXT HERE" height="240" border="10"/>
-The code in this repository offers an implementation of a number of routines in authorship studies, with a focus on authorship verification in the General Impostor (GI) framework. It specifically aimed to compare the fairly novel "minmax" measure (introduced by M. Ružička) to a number of popular alternatives. The packages additionally offers a number of useful implementations of common vector space models and evaluation metrics. The code in this repository was used to produce the results in a paper which is currently under submission.
+The code in this repository offers an implementation of a number of routines in authorship studies, with a focus on authorship verification. It is named after the inventor of the "minmax" measure (M. Ružička). The repository offers a generic implementation of two commonly used verification systems. The first system is an intrinsic verifier, depending on a first-order metric (O1), close to the one described in:
+
+```
+Potha, N. and E. Stamatatos. A Profile-based Method for Authorship Verification In <i>Proc. of the 8th Hellenic Conference on Artificial Intelligence (SETN)</i>, LNCS, 8445, pp. 313-326, 2014.
+```
+
+The second system is an extrinsic verifier with second-order metrics (O2), based the General Imposters framework as described in:
+
+```
+M. Koppel and Y. Winter (2014), Determining if Two Documents are by the Same Author, <i>JASIST</i>, 65(1): 178-187.
+```
+
+The packages additionally offers a number of useful implementations of common vector space models and evaluation metrics. The code in this repository was used to produce the results in a paper which is currently under submission.
+
 
 ## Quickstart
 
 <img align="right" src="https://cloud.githubusercontent.com/assets/4376879/11402488/87041952-9398-11e5-82f9-cf3abcbe5f53.png" 
 alt="IMAGE ALT TEXT HERE" height="240" border="10" style="float: right;" />
-While the code in this repository was tailored towards our needs for a specific paper, we will include an IPython notebook, which will guide you through some of the main functionality offered. In the code, we try to offer full documentation in the form of docstrings.
+While the code in this repository was tailored towards our needs for a specific paper, the `code` folder includes an IPython notebook, which will guide you through some of the main functionality offered. In the code itself, we try to offer comprehensive documentation in the form of docstrings.
 
 ## Data sets
 This repository includes 6 multilingual benchmark datasets for authorship verification (under `data/`), which were used as the official competition data in the 2014 track on authorship verification of the annual [PAN evaluation lab](http://www.uni-weimar.de/medien/webis/events/pan-14/pan14-web/) on uncovering plagiarism, authorship, and social software misuse. The [survey paper](http://www.uni-weimar.de/medien/webis/events/pan-14/pan14-papers-final/pan14-authorship-verification/stamatatos14-overview.pdf) by Stamatatos et al. provides detailed information on the provenance, structure and nature of these corpora (together with baselines figures etc.). The competition data for this competition covered the following text varieties:
