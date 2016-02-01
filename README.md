@@ -25,7 +25,12 @@ The package additionally offers a number of useful implementations of common vec
 
 <img align="right" src="https://cloud.githubusercontent.com/assets/4376879/11402488/87041952-9398-11e5-82f9-cf3abcbe5f53.png" 
 alt="IMAGE ALT TEXT HERE" height="240" border="10" style="float: right;" />
-While the code in this repository was tailored towards our needs for a specific paper, the `code` folder includes an IPython notebook, which will guide you through some of the main functionality offered. In the code itself, we try to offer comprehensive documentation in the form of docstrings.
+While the code in this repository was tailored towards our needs for a specific paper, the `code` folder includes an IPython notebook, which will guide you through some of the main functionality offered. In the code itself, we try to offer comprehensive documentation in the form of docstrings. All experiments in our paper can be repeated using the following scripts under `code`:
++ 01pan_experiments.py
++ 02latin_dev_o1.py
++ 03latin_dev_o2.py
++ 04latin_test_o2.py
++ 05latin_testviz.py
 
 ## Data sets
 This repository includes 6 multilingual benchmark datasets for authorship verification (under `data/`), which were used as the official competition data in the 2014 track on authorship verification of the annual [PAN evaluation lab](http://www.uni-weimar.de/medien/webis/events/pan-14/pan14-web/) on uncovering plagiarism, authorship, and social software misuse. The [survey paper](http://www.uni-weimar.de/medien/webis/events/pan-14/pan14-papers-final/pan14-authorship-verification/stamatatos14-overview.pdf) by Stamatatos et al. provides detailed information on the provenance, structure and nature of these corpora (together with baselines figures etc.). The competition data for this competition covered the following text varieties:
