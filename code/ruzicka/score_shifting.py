@@ -96,7 +96,7 @@ class ScoreShifter:
 
     """
 
-    def __init__(self, step_size=0.05):
+    def __init__(self, step_size=0.01):
         """
         Contructor.
 
@@ -149,7 +149,7 @@ class ScoreShifter:
                                 ground_truth_scores=ground_truth_scores)
                 auc_scores[i][j] = auc_score
                 c_at_1_scores[i][j] = c_at_1_score
-                both_scores[i][j] = auc_score*c_at_1_score
+                both_scores[i][j] = auc_score * c_at_1_score
 
         # find 2D optimum:
         opt_p1_idx, opt_p2_idx = np.unravel_index(both_scores.argmax(), both_scores.shape)

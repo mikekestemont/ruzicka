@@ -1,0 +1,52 @@
+﻿ Is English A Romance Language?  
+1. 
+Introduction  The English language is classified as a Germanic language, to be more precise it belongs to the branch of West Germanic languages. 
+Today, there are some people that claim that English is more closely linked to the Romance languages than it is to the Germanic ones. 
+Throughout the development of English, from Old English up to Present-day English the Romance languages have admittedly had an enormous influence on the language. 
+In this discussion I will give a brief presentation on the history of the Germanic and Romance language in England and the effects they have had on English. 
+This is a very interesting matter to investigate because it is always fascinating to see how a language has evolved over the years. 
+I will also conduct a small investigation, using a corpus search, where I'll look at word-pairs where one of the words is originally Romance and the other Germanic (such as aid and help). 
+The purpose of this investigation is to see which of these words is the most frequent and also if there is any difference in the contexts in which they are used. 
+In the first part of my discussion where I will talk about the history of the Germanic and Romance languages in England I have used the following material: Svartvik (1999).   	  
+2. 
+The arrival of Germanic tribes in England  In about 450 AD a couple of Germanic tribes settled in Britain and brought with them their different Germanic dialects. 
+These dialects were the beginning of the English language. 
+It is not quite certain why these tribes came to Britain but it is believed that a British chief had asked the Jutes, a Germanic tribe, for help with the attacks from the North. 
+Angles and Saxons also settled in Britain in this period. 
+"Anglo-Saxon" became the term for the form of English that was spoken until the time of the Norman Conquest but a more common term for this period in the history of the English language is Old English. 
+The English language can be divided into three different periods: Old English (c. 
+450-1100), Middle English (c. 1100-1500) and Modern English (c. 1500- today). 
+Old English was a highly inflected language; it made great use of variations in the endings of words. 
+This is something that absent in Present-day English, which doesn't have nearly as many endings. 
+The vocabulary in this period was enriched with words from Latin, Old Norse (the language the Vikings spoke), and Celtic. 
+The amount of loan words was to be increased dramatically by the Norman Conquest.  
+3. 
+The Norman Conquest  In 1066 William The Conqueror, Duke of Normandy, defeated King Harold at the Battle of Hastings and that victory came to have enormous consequences on England and not to mention English. 
+This is a period where a huge amount of Romance loan words were introduced and the grammatical inflectional system was reduced. 
+In the beginning of Middle English (c. 1100) about ninety percent of the vocabulary was Germanic but at the end of the period this number had been reduced to about seventy-five percent. 
+Since England was ruled by French-speaking people French became the language among the higher classes in society. 
+English was looked upon as a language with low status. 
+These social differences can be found even in the use of vocabulary, for instance in cooking where those who ate the animals talked about veal, venison, mutton and pork (which are all French loan words) and the group of people who took care of the animals talked about calf, deer, sheep and swine.  
+4. 
+Romance and Germanic words in present-day English  Since English got its vocabulary from both Romance and Germanic languages we have a lot of word-pairs where one word is Romance and the other Germanic. 
+When these two words mean essentially the same this we have huge stylistic possibilities. 
+Svartvik (1999) states that the Romance word is often more formal or abstract than the Germanic one. 
+He gives an example of this: if a man falls into the water he would yell, "Help, Help!" 
+not "Aid, Aid!" 
+I have conducted an investigation where I have looked at this type of word-pairs in a Corpus; my intention was to find out which of the words is the most frequent and also in what contexts they are used. 
+In order to determine the most frequent context that the words appear in I have selected a few words and looked at the contexts they were used in. 
+These are my results:     Romance Word 	Hits in Corpus	Germanic Word 	Hits in Corpus  Aid	168	Help	516	 -Was the most common in texts dealing with 	-Was the most frequent in medical texts Foreign affairs 	 Anticipate	19	Look forward to	7 -Was the most common in scientific texts	-Too few hits to find a real pattern  Commence	6	Begin	200	 -Used in formal texts such as business and law	-Used in a wide rang of texts ranging from  		Sports to science  Conceal	13	Hide	19 Desire	149	Wish	176	 Discover	53	Find out	37 Encounter	67	Come across	10 Enter	105	Go in	26 Infant	69	Child	276 Investigate	39	Look into	1 Liberty	124	Freedom	292 arriage	318	Wedding	18 Persuade	56	Talk into	0 Surrender 	24	Give in	2  5. 
+Conclusion  As we can see from the result it differs from word to word whether the Germanic or the Romance word is the most common. 
+When it comes to stylistic difference between the words you can say that the Romance words were somewhat more formal and tended to be used in fewer number of areas than the Germanic word. 
+According to Svartvik (1999) most of the words in English have come from Romance languages. 
+Therefor we can then ask ourselves if English is a Germanic or a Romance language. 
+The answer is that English is a Germanic language in terms of grammar and therefor more closely related to Swedish and German than French and Spanish. 
+After the Norman conquest French became the language of the upper classes and a lot of loan words came into such fields as administration, law and fashion. 
+There is no doubt that that the combination of Romance and Germanic languages has contributed to making English an international language. 
+People from all over Europe and with different mother tongues can easily recognize some words in the English vocabulary. 
+This mixed vocabulary makes English one of the most fascinating languages in the world. 
+As quoted in Jean-Marc Gachelin article in English Today (1990) where he talks about the relationship that English has to the Germanic and Romance languges: "the warp may be Anglo-Saxon, but the woof is Roman as well as the embroidery".   
+References  Svartvik, Jan. 
+1999. 
+"Is English a Romance Language". 
+English Today no.23

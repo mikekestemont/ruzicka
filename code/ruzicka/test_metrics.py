@@ -52,7 +52,9 @@ def minmax(x, y, rnd_feature_idxs):
     a, b = 0.0, 0.0
 
     for i in rnd_feature_idxs:
+
         a, b = x[i], y[i]
+
         if a >= b:
             maxs += a
             mins += b
@@ -96,12 +98,13 @@ def manhattan(x, y, rnd_feature_idxs):
 
     for i in rnd_feature_idxs:
         z = x[i]-y[i]
+
         if z < 0.0:
             z = -z
+
         diff += z
 
     return diff
-
 
 @autojit(target=TARGET)
 def euclidean(x, y, rnd_feature_idxs):
@@ -134,10 +137,63 @@ def euclidean(x, y, rnd_feature_idxs):
     diff, z = 0.0, 0.0
 
     for i in rnd_feature_idxs:
-        z = x[i]-y[i]
+        z = x[i] - y[i]
         diff += (z * z)
     
     return math.sqrt(diff)
+
+@autojit(target=TARGET)
+def common_ngrams2(x, y, rnd_feature_idxs):
+    diff = 0.0
+
+    for i in rnd_feature_idxs:
+        z = 0.0
+
+        #if x[i] > 0.0 or y[i] > 0.0: # take union ngrams (slightly better)
+        #if x[i] > 0.0 or y[i] > 0.0: # take intersection ngrams
+        #if x[i] > 0.0: # take intersection ngrams
+        if y[i] > 0.0: # only target text (works best):
+
+            z = (x[i] + y[i]) / 2.0
+            z = (x[i] - y[i]) / z
+        
+            diff += (z * z)
+
+    return diff
+
+@autojit(target=TARGET)
+def common_ngrams(x, y, rnd_feature_idxs):
+    diff, z = 0.0, 0.0
+
+    for i in rnd_feature_idxs:
+
+        #if x[i] > 0.0 or y[i] > 0.0: # take union ngrams (slightly better)
+        #if x[i] > 0.0 or y[i] > 0.0: # take intersection ngrams
+        #if x[i] > 0.0: # take intersection ngrams
+        if y[i] > 0.0: # only target text (works best):
+
+            z = (2.0 * (x[i] - y[i])) / (x[i] + y[i])
+        
+            diff += (z * z)
+
+    return diff
+
+@autojit(target=TARGET)
+def cosine(x, y, rnd_feature_idxs):
+
+    numerator, denom_a, denom_b = 0.0, 0.0, 0.0
+
+    for i in rnd_feature_idxs:
+
+        numerator += x[i] * y[i]
+
+        denom_a += x[i] * x[i]
+        denom_b += y[i] * y[i]
+
+    return 1.0 - (numerator / (math.sqrt(denom_a) * math.sqrt(denom_b)))
+
+
+
 
 
 

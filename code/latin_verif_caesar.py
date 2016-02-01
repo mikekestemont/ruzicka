@@ -23,6 +23,7 @@ from ruzicka.evaluation import pan_metrics
 from ruzicka.verification import Verifier
 import ruzicka.art as art
 
+# run script for top-5 metrics
 ngram_type = 'word'
 ngram_size = 1
 base = 'profile'
@@ -84,9 +85,9 @@ for idx in range(len(test_documents)):
                         rnd_prop = rnd_prop)
     verifier.fit(tmp_train_X, tmp_train_y)
     probas = verifier.predict_proba(test_X = tmp_test_X,
-                                    test_y = tmp_test_y,
-                                    nb_imposters = nb_imposters)
-
+                        test_y = tmp_test_y,
+                        nb_imposters = nb_imposters)
+    
     row = [label_encoder.inverse_transform([target_auth])[0]] # author label
     row += list(probas)
     print(row)
@@ -98,7 +99,7 @@ proba_df = proba_df.set_index('label')
 table_dir = '../output/tables/'
 if not os.path.isdir(table_dir):
     os.mkdir(table_dir)
-proba_df.to_csv(table_dir+'caesar_latin_test_proba.csv')
+proba_df.to_csv(table_dir+'lat_proba_'+metric+'_'+vector_space+'.csv')
 
 cm = sns.clustermap(proba_df)
 ax = cm.ax_heatmap

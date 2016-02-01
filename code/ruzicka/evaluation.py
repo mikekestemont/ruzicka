@@ -55,8 +55,10 @@ def accuracy(prediction_scores, ground_truth_scores):
     """
 
     acc = 0.0
+    assert len(ground_truth_scores) == len(prediction_scores)
+
     for gt_score, pred_score in zip(ground_truth_scores, prediction_scores):
-        if (pred_score >= 0.5) == (gt_score >= 0.5):
+        if (pred_score > 0.5) == (gt_score > 0.5):
             acc += 1.0
     return acc / float(len(prediction_scores))
 
@@ -132,13 +134,13 @@ def c_at_1(prediction_scores, ground_truth_scores):
     """
 
     n = float(len(prediction_scores))
-    nc, nu = 0, 0
+    nc, nu = 0.0, 0.0
     for gt_score, pred_score in zip(ground_truth_scores, prediction_scores):
         if pred_score == 0.5:
             nu += 1
-        elif (pred_score >= 0.5) == (gt_score >= 0.5):
+        elif (pred_score > 0.5) == (gt_score > 0.5):
             nc += 1.0
-    return (nc + (nu * nc / n)) / n
+    return (1 / n) * (nc + (nu * nc / n))
 
 
 def pan_metrics(prediction_scores, ground_truth_scores):

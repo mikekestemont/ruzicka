@@ -22,6 +22,7 @@ import seaborn as sb
 from scipy.spatial.distance import pdist, squareform
 from scipy.stats import ks_2samp
 from mpl_toolkits.axes_grid.anchored_artists import AnchoredText
+from sklearn.preprocessing import RobustScaler
 
 from ruzicka.utilities import load_pan_dataset, get_vocab_size
 from ruzicka.vectorization import Vectorizer
@@ -58,36 +59,42 @@ def SADPs_DADPs(dm, authors, trim_DADPs=True, random_state=1066):
     DPs = np.asarray(list(SADPs)+list(DADPs))
     SADPs = np.asarray(SADPs)
     DADPs = np.asarray(DADPs)
-
+    
+    DPs = DPs[np.nonzero(DPs)]
+    
+    robust_scaler = RobustScaler()
+    robust_scaler.fit(DPs)
+    
+    SADPs = robust_scaler.transform(SADPs[np.nonzero(SADPs)])
+    DADPs = robust_scaler.transform(DADPs[np.nonzero(DADPs)])
+    
+    """
     # scale the distances to 0-1 range,
     # but rm any lingering zeros from diagonal in dm:
     min_dist, max_dist = np.min(DPs[np.nonzero(DPs)]), np.max(DPs)
 
     SADPs = (SADPs[np.nonzero(SADPs)] - min_dist) / (max_dist - min_dist)
     DADPs = (DADPs[np.nonzero(DADPs)] - min_dist) / (max_dist - min_dist)
+    """
 
     return SADPs, DADPs
 
 
 # set hyperparameters:
-corpus_dirs = ['../data/2014/du_essays/',
-               '../data/2014/gr_articles/',
-               '../data/2014/sp_articles/',
-               '../data/2014/en_essays/',
-              ]
+corpus_dirs = ['../data/latin/dev/']
 # set hyperparameters:
-mfi = sys.maxint
+mfi = 1000
 ngram_type = 'word'
 ngram_size = 1
 min_df = 1
 vsms = ('tf', 'tf_std', 'tf_idf')
-dms = ('minmax', 'euclidean', 'cityblock')
+dms = ('minmax', 'cosine', 'cityblock')
 
 for corpus_dir in corpus_dirs:
     print('>>> corpus:', corpus_dir)
 
     # preprocess the train data
-    data, _ = load_pan_dataset(corpus_dir+'train')
+    data, _ = load_pan_dataset(corpus_dir)
     labels, documents = zip(*data)
 
     # set visual parameters:
@@ -106,14 +113,15 @@ for corpus_dir in corpus_dirs:
                                 ngram_size=ngram_size,
                                 min_df=min_df)
         X = vectorizer.fit_transform(documents).toarray()
-
+        
         for dm_cnt, dm in enumerate(dms):
             print('\t\t+ ', dm)
+            
             if dm != 'minmax':
                 distance_matrix = squareform(pdist(X, dm))
             else:
                 distance_matrix = squareform(pdist(X, pairwise_minmax))
-
+            
             # extract scores for same-author and different-author DPs:
             SADPs, DADPs = SADPs_DADPs(distance_matrix, labels,
                                trim_DADPs=True, random_state=distance_matrix.shape[0])
@@ -121,7 +129,8 @@ for corpus_dir in corpus_dirs:
             # plot distributions using kdeplot:
             sb.set_style("dark")
             ax = sb.plt.Subplot(fig, outer_grid[cnt])
-            ax.set_xlim([0, 1])
+            ax.set_xlim([-1, 1])
+            
             sb.kdeplot(DADPs, shade=True, legend=False, c=c1, ax=ax, lw=0.5)
             sb.kdeplot(SADPs, shade=True, legend=False, c=c2, ax=ax, lw=0.5)
 

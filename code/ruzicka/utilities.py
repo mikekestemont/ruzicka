@@ -125,7 +125,7 @@ def load_ground_truth(filepath, labels):
     Loads the ground truth labels for a given dataset
     (typically `truth.txt`).
       - Needs `labels` as a parameter, to ensure that
-        the problems labels are returned in the correct
+        the problem labels are returned in the correct
         order.
       - Expects the file at `filepath` to use the PAN
         2014 syntax.

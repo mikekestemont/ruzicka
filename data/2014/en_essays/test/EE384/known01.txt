@@ -1,0 +1,31 @@
+﻿ Echelon - Eavesdroppers Galore  Privacy, freedom of speech and freedom of opinion are some of the most jealously guarded rights of people in democratic countries all over the world. 
+Democratic governments, at least those in the 'western' world, are presumed by their citizens to adhere to those basic principles of democracy. 
+Citizens who have suggested that 'Big Brother is watching us', have generally been dismissed as paranoid conspiracy theorists. 
+As it turns out, they may not have been too far from the truth. 
+The last few years have shown news items about a global spy network, nicknamed Echelon, operated by the US National Security Agency with the co-operation of the UK, Canada, New Zealand and Australia.  	
+Echelon is a fully automated intercept and relaying network that listens for certain keywords and catch phrases in Internet and telephone traffic, satellite communications and radio transmissions. 
+If a transmission contains a keyword that the system is set to look for, it will be forwarded to a human operator for further scrutiny.  
+The system was originally devised to gather signal intelligence from the east bloc during the cold war, but has grown enormously in scope since that time. 
+It can be used today for completely different tasks, including industrial, financial, and political espionage against virtually every nation, business or individual on earth that has access to a communications network of some kind. 
+The inherent dangers to such a system should be evident. 	 
+The dangers lie not so much in the way Echelon is used today (although it is hard to determine the extent of its use; the nations involved are very secretive about its functions and how they use it), but in how it could be used. 
+Claims are being made that the five nations trade intelligence information gathered through Echelon with each other, to the extent that they actually spy on one another's citizens. 
+In effect, this would mean that in the case of the NSA, the fourth amendment to the constitution of the United States has been completely bypassed. 
+A citizen of the United States should not be subject to investigation unless there is probable cause, and even then, he should not be subject to a search of his person or premises, nor should he be tapped unless so ordered by a court of law. 
+Echelon taps everybody, all the time, and there is no one to turn to with complaints. 
+The NSA does not spy on its country's citizens, but e.g. the UK does. 
+The UK then shares the information with the NSA, leaving the issue of legal jurisdiction muddled. 
+Should these allegations of crimes against the constitutional safeguards prove correct, one could argue that the totalitarian system of government in Orwell's '1984' is unpleasantly close. 	
+We might not be controlled by Big Brother yet, but there are alarming tendencies. 
+The only way to foil the Echelon network is to encrypt any and all information that is transmitted electronically. 
+Strong cryptography is essential for online privacy. 
+The best known cryptographic software available to private consumers is PGP, Pretty Good Privacy, written by American programmer Phil Zimmerman. 
+PGP is free, easy to use, and offers good privacy for Internet communications. 
+When Zimmerman first released PGP to the public, he was sued by the American government on the charge that releasing such strong cryptographic software to the enemies of the United States was a threat to national security. 
+The charges were eventually dropped, but the international version of PGP does not offer as strong cryptography as the one for use in America and Canada.. 
+Apparently, the NSA does not wish to be impeded in its eavesdropping.  	
+Echelon is designed specifically to eavesdrop on everyone that uses any form of electronic communication. 
+Its operators seem to be less than interested in following the laws of their respective countries. 
+It is a serious threat to individual as well as corporate privacy. 
+Should the allegations currently lodged against the Echelon operators turn out to be true, the only right thing to do is to move for immediate termination of the network in its current form. 
+The violation of privacy inherent in the system far outweighs any advantage.

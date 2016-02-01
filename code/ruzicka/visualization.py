@@ -115,7 +115,7 @@ def clustermap(X, labels, outputfile='../output/clustermap.pdf', fontsize=5):
     df = pd.DataFrame(data=X, columns=labels)
 
     # extract correlations for a scaled version of X:
-    df = df.applymap(lambda x:int(x*10000)).corr()
+    df = df.applymap(lambda x:int(x*100000)).corr()
 
     # clustermap plotting:
     cm = sns.clustermap(df)
