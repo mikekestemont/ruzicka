@@ -18,7 +18,7 @@ M. Koppel and Y. Winter (2014), Determining if Two Documents are by the Same
 Author, JASIST, 65(1): 178-187.
 ```
 
-The packages additionally offers a number of useful implementations of common vector space models and evaluation metrics. The code in this repository was used to produce the results in a paper which is currently under submission.
+The package additionally offers a number of useful implementations of common vector space models and evaluation metrics. The code in this repository was used to produce the results in a paper which is currently under submission.
 
 
 ## Quickstart
@@ -36,7 +36,7 @@ This repository includes 6 multilingual benchmark datasets for authorship verifi
 * Spanish articles
 * Greek articles
 
-Additionally, this repository includes a novel benchmark dataset for Latin authors from Antiquity (under `data/latin/`), which were mainly selected from the [Latin Library](http://www.thelatinlibrary.com/). This data set has a similar structure as the PAN corpora, distinguising between a set of development and test problems regarding authorship verification. 
+Additionally, this repository includes a novel benchmark dataset for Latin authors from Antiquity (under `data/latin/`), which were mainly selected from the [Latin Library](http://www.thelatinlibrary.com/). This data set has a similar structure as the PAN corpora. 
 
 ## Dependencies
 This code requires Python 2.7+ (Python 3 has not been tested). The repository is dependent on a number of well-known third-party Python libraries, including:
