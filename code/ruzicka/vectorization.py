@@ -12,11 +12,13 @@ from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.preprocessing import StandardScaler, Normalizer
 
+
 def identity(y):
     """
     Simple identity function.
     """
     return y.split()
+
 
 class StdDevScaler(BaseEstimator):
     """
@@ -70,10 +72,10 @@ class StdDevScaler(BaseEstimator):
             The scaled input data in sparse format.
 
         """
-        if not sp.isspmatrix_csr(X): # convert to sparse format if needed:
+        if not sp.isspmatrix_csr(X):  # convert to sparse format if needed:
             X = sp.csr_matrix(X, dtype=np.float64)
         for i in range(X.shape[0]):
-            start, end = X.indptr[i], X.indptr[i+1]
+            start, end = X.indptr[i], X.indptr[i + 1]
             X.data[start:end] /= self.weights_[X.indices[start:end]]
         return X
 
@@ -95,13 +97,21 @@ class Vectorizer:
 
     """
 
-    def __init__(self, mfi=100, ngram_type='word',
-                 ngram_size=1, vocabulary=None,
-                 vector_space='tf', lowercase=True,
-                 min_df=0, max_df=1.0, ignore=[]):
+    def __init__(
+        self,
+        mfi=100,
+        ngram_type="word",
+        ngram_size=1,
+        vocabulary=None,
+        vector_space="tf",
+        lowercase=True,
+        min_df=0.0,
+        max_df=1.0,
+        ignore=[],
+    ):
         """
         Initialize the vectorizer by setting up a
-        vectorization pipeline via sklearn as 
+        vectorization pipeline via sklearn as
         `self.transformer`
 
         Parameters
@@ -150,47 +160,47 @@ class Vectorizer:
         - 'bin': binary model, only captures presence of features
         """
 
-        if vector_space not in ('tf', 'tf_scaled', 'tf_std', 'tf_idf', 'bin'):
-            raise ValueError('Unsupported vector space model: %s' %(vector_space))
+        if vector_space not in ("tf", "tf_scaled", "tf_std", "tf_idf", "bin"):
+            raise ValueError("Unsupported vector space model: %s" % (vector_space))
 
-        
-        self.params = {'max_features': mfi,
-                 'max_df': max_df,
-                 'min_df': min_df,
-                 'preprocessor': None,
-                 'ngram_range': (ngram_size, ngram_size),
-                 'lowercase': False,
-                 'decode_error': 'ignore',
-                 'stop_words': ignore,
-                }
+        self.params = {
+            "max_features": mfi,
+            "max_df": max_df,
+            "min_df": min_df,
+            "preprocessor": None,
+            "ngram_range": (ngram_size, ngram_size),
+            "lowercase": False,
+            "decode_error": "ignore",
+            "stop_words": ignore,
+        }
 
-        if ngram_type == 'word':
-            self.params['tokenizer'] = identity
-        elif ngram_type in ('char', 'char_wb'):
-            self.params['analyzer'] = ngram_type
+        if ngram_type == "word":
+            self.params["tokenizer"] = identity
+        elif ngram_type in ("char", "char_wb"):
+            self.params["analyzer"] = ngram_type
 
         n = Normalizer(norm="l2", copy=False)
 
-        if vector_space == 'tf':
-            self.params['use_idf'] = False
+        if vector_space == "tf":
+            self.params["use_idf"] = False
             v = TfidfVectorizer(**self.params)
-            self.transformer = Pipeline([('s1', v), ('s2', n)])
+            self.transformer = Pipeline([("s1", v), ("s2", n)])
 
-        elif vector_space == 'tf_std':
-            self.params['use_idf'] = False
+        elif vector_space == "tf_std":
+            self.params["use_idf"] = False
             v = TfidfVectorizer(**self.params)
             scaler = StdDevScaler()
-            self.transformer = Pipeline([('s1', v), ('s2', scaler), ('s3', n)])
+            self.transformer = Pipeline([("s1", v), ("s2", scaler), ("s3", n)])
 
-        elif vector_space == 'tf_idf':
-            self.params['use_idf'] = True
+        elif vector_space == "tf_idf":
+            self.params["use_idf"] = True
             v = TfidfVectorizer(**self.params)
-            self.transformer = Pipeline([('s1', v), ('s2', n)])
+            self.transformer = Pipeline([("s1", v), ("s2", n)])
 
-        elif vector_space == 'bin':
-            self.params['binary'] = True
+        elif vector_space == "bin":
+            self.params["binary"] = True
             v = CountVectorizer(**self.params)
-            self.transformer = Pipeline([('s1', v), ('s2', n)])
+            self.transformer = Pipeline([("s1", v), ("s2", n)])
 
     def fit(self, texts):
         """
@@ -204,14 +214,14 @@ class Vectorizer:
             Assumed untokenized input in the case of
             `ngram_type`='word', else expects
             continguous strings.
-        
+
         Returns
         ----------
         X: array-like, [n_texts, n_features]
             Vectorized texts in sparse format.
         """
         self.transformer.fit(texts)
-        self.feature_names = self.transformer.named_steps['s1'].get_feature_names()
+        self.feature_names = self.transformer.named_steps["s1"].get_feature_names_out()
         return self
 
     def transform(self, texts):
@@ -220,5 +230,3 @@ class Vectorizer:
     def fit_transform(self, texts):
         self.fit(texts)
         return self.transform(texts)
-
-
