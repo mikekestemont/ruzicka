@@ -12,12 +12,13 @@ package is available:
     http://docs.continuum.io/numbapro/index
 """
 
-from numbapro import autojit
+import numba
 
-TARGET = 'cpu'
+TARGET = "cpu"
 
-@autojit(target=TARGET)
-def minmax(x, y, rnd_feature_idxs):
+
+@numba.jit
+def minmax(x, y: list[float], rnd_feature_idxs: list[int] = []):
     """
     Calculates the pairwise "minmax" distance between
     two vectors, but limited to the `rnd_feature_idxs`
@@ -52,7 +53,6 @@ def minmax(x, y, rnd_feature_idxs):
     a, b = 0.0, 0.0
 
     for i in rnd_feature_idxs:
-
         a, b = x[i], y[i]
 
         if a >= b:
@@ -62,10 +62,13 @@ def minmax(x, y, rnd_feature_idxs):
             maxs += b
             mins += a
 
-    return 1.0 - (mins / (maxs + 1e-6)) # avoid zero division
+    return 1.0 - (mins / (maxs + 1e-6))  # avoid zero division
 
 
-@autojit(target=TARGET)
+# TODO: below here updated to @numba.jit without checking anything!
+
+
+@numba.jit
 def manhattan(x, y, rnd_feature_idxs):
     """
     Calculates the conventional pairwise Manhattan city
@@ -97,7 +100,7 @@ def manhattan(x, y, rnd_feature_idxs):
     diff, z = 0.0, 0.0
 
     for i in rnd_feature_idxs:
-        z = x[i]-y[i]
+        z = x[i] - y[i]
 
         if z < 0.0:
             z = -z
@@ -106,7 +109,8 @@ def manhattan(x, y, rnd_feature_idxs):
 
     return diff
 
-@autojit(target=TARGET)
+
+@numba.jit
 def euclidean(x, y, rnd_feature_idxs):
     """
     Calculates the conventional pairwise Euclidean
@@ -138,62 +142,54 @@ def euclidean(x, y, rnd_feature_idxs):
 
     for i in rnd_feature_idxs:
         z = x[i] - y[i]
-        diff += (z * z)
-    
+        diff += z * z
+
     return math.sqrt(diff)
 
-@autojit(target=TARGET)
+
+@numba.jit
 def common_ngrams2(x, y, rnd_feature_idxs):
     diff = 0.0
 
     for i in rnd_feature_idxs:
         z = 0.0
 
-        #if x[i] > 0.0 or y[i] > 0.0: # take union ngrams (slightly better)
-        #if x[i] > 0.0 or y[i] > 0.0: # take intersection ngrams
-        #if x[i] > 0.0: # take intersection ngrams
-        if y[i] > 0.0: # only target text (works best):
-
+        # if x[i] > 0.0 or y[i] > 0.0: # take union ngrams (slightly better)
+        # if x[i] > 0.0 or y[i] > 0.0: # take intersection ngrams
+        # if x[i] > 0.0: # take intersection ngrams
+        if y[i] > 0.0:  # only target text (works best):
             z = (x[i] + y[i]) / 2.0
             z = (x[i] - y[i]) / z
-        
-            diff += (z * z)
+
+            diff += z * z
 
     return diff
 
-@autojit(target=TARGET)
+
+@numba.jit
 def common_ngrams(x, y, rnd_feature_idxs):
     diff, z = 0.0, 0.0
 
     for i in rnd_feature_idxs:
-
-        #if x[i] > 0.0 or y[i] > 0.0: # take union ngrams (slightly better)
-        #if x[i] > 0.0 or y[i] > 0.0: # take intersection ngrams
-        #if x[i] > 0.0: # take intersection ngrams
-        if y[i] > 0.0: # only target text (works best):
-
+        # if x[i] > 0.0 or y[i] > 0.0: # take union ngrams (slightly better)
+        # if x[i] > 0.0 or y[i] > 0.0: # take intersection ngrams
+        # if x[i] > 0.0: # take intersection ngrams
+        if y[i] > 0.0:  # only target text (works best):
             z = (2.0 * (x[i] - y[i])) / (x[i] + y[i])
-        
-            diff += (z * z)
+
+            diff += z * z
 
     return diff
 
-@autojit(target=TARGET)
-def cosine(x, y, rnd_feature_idxs):
 
+@numba.jit
+def cosine(x, y, rnd_feature_idxs):
     numerator, denom_a, denom_b = 0.0, 0.0, 0.0
 
     for i in rnd_feature_idxs:
-
         numerator += x[i] * y[i]
 
         denom_a += x[i] * x[i]
         denom_b += y[i] * y[i]
 
     return 1.0 - (numerator / (math.sqrt(denom_a) * math.sqrt(denom_b)))
-
-
-
-
-
-
