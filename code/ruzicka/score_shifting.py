@@ -6,7 +6,8 @@ from itertools import permutations
 
 import numpy as np
 
-from evaluation import pan_metrics
+from .evaluation import pan_metrics
+
 
 def rescale(value, orig_min, orig_max, new_min, new_max):
     """
@@ -48,7 +49,7 @@ def rescale(value, orig_min, orig_max, new_min, new_max):
     return new_min + (scaled_value * new_span)
 
 
-def correct_scores(scores, p1=.25, p2=.75):
+def correct_scores(scores, p1=0.25, p2=0.75):
     """
 
     Rescales a list of scores (originally between 0 and 1)
@@ -86,7 +87,7 @@ def correct_scores(scores, p1=.25, p2=.75):
 class ScoreShifter:
     """
 
-    An object to shifts the raw verification probabilities 
+    An object to shifts the raw verification probabilities
     outputted by a system, to better account for the PAN
     metrics, which have a strict attribution threshold at 0.5.
 
@@ -116,7 +117,7 @@ class ScoreShifter:
         Fits the score shifter on the (development) scores for
         a data set, by searching the optimal `p1` and `p2` (in terms
         of AUC x c@1) through a stepwise grid search.
-        
+
         Parameters
         ----------
         prediction_scores : array [n_problems]
@@ -142,25 +143,28 @@ class ScoreShifter:
         for i, j in permutations(range(nb_thresholds), 2):
             p1, p2 = thresholds[i], thresholds[j]
 
-            if p1 <= p2: # ensure p1 <= p2!
+            if p1 <= p2:  # ensure p1 <= p2!
                 corrected_scores = correct_scores(predicted_scores, p1=p1, p2=p2)
-                acc_score, auc_score, c_at_1_score = \
-                    pan_metrics(prediction_scores=corrected_scores,
-                                ground_truth_scores=ground_truth_scores)
+                acc_score, auc_score, c_at_1_score = pan_metrics(
+                    prediction_scores=corrected_scores,
+                    ground_truth_scores=ground_truth_scores,
+                )
                 auc_scores[i][j] = auc_score
                 c_at_1_scores[i][j] = c_at_1_score
                 both_scores[i][j] = auc_score * c_at_1_score
 
         # find 2D optimum:
-        opt_p1_idx, opt_p2_idx = np.unravel_index(both_scores.argmax(), both_scores.shape)
+        opt_p1_idx, opt_p2_idx = np.unravel_index(
+            both_scores.argmax(), both_scores.shape
+        )
         self.optimal_p1 = thresholds[opt_p1_idx]
         self.optimal_p2 = thresholds[opt_p2_idx]
-        
+
         # print some info:
-        print('p1 for optimal combo:', self.optimal_p1)
-        print('p2 for optimal combo:', self.optimal_p2)
-        print('AUC for optimal combo:', auc_scores[opt_p1_idx][opt_p2_idx])
-        print('c@1 for optimal combo:', c_at_1_scores[opt_p1_idx][opt_p2_idx])
+        print("p1 for optimal combo:", self.optimal_p1)
+        print("p2 for optimal combo:", self.optimal_p2)
+        print("AUC for optimal combo:", auc_scores[opt_p1_idx][opt_p2_idx])
+        print("c@1 for optimal combo:", c_at_1_scores[opt_p1_idx][opt_p2_idx])
 
         return self
 
@@ -168,7 +172,7 @@ class ScoreShifter:
         """
         Shifts the probabilities of a (new) problem series, through
         applying the score_shifter with the previously set `p1` and `p2`.
-        
+
         Parameters
         ----------
         scores : array [n_problems]
@@ -181,8 +185,4 @@ class ScoreShifter:
 
         """
 
-        return correct_scores(scores=scores,
-                                p1=self.optimal_p1,
-                                p2=self.optimal_p2)
-
-    
+        return correct_scores(scores=scores, p1=self.optimal_p1, p2=self.optimal_p2)
