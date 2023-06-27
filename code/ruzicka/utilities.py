@@ -13,11 +13,12 @@ import sys
 from collections import Counter
 
 import numpy as np
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 
-from vectorization import Vectorizer
+from .vectorization import Vectorizer
 
-def load_pan_dataset(directory, ext='txt', encoding='utf8'):
+
+def load_pan_dataset(directory, ext="txt", encoding="utf8"):
     """
     Loads the data from `directory`, which should hold subdirs
     for each "problem"/author in a dataset. As with the official
@@ -47,7 +48,7 @@ def load_pan_dataset(directory, ext='txt', encoding='utf8'):
       http://www.uni-weimar.de/medien/webis/events/pan-15/pan15-web/author-identification.html
     - The author labels in the `test_data` returned are NOT NECESSARILY
       the actual, correct authors of the `unknown.txt`, but only the
-      authorship against which the authorship of the associated test 
+      authorship against which the authorship of the associated test
       document should be verified.
 
     """
@@ -57,25 +58,21 @@ def load_pan_dataset(directory, ext='txt', encoding='utf8'):
     for author in sorted(os.listdir(directory)):
         path = os.sep.join((directory, author))
         if os.path.isdir(path):
-            for filepath in sorted(glob.glob(path+'/*.'+ext)):
-                text = codecs.open(filepath, mode='r').read()
+            for filepath in sorted(glob.glob(path + "/*." + ext)):
+                text = codecs.open(filepath, mode="r").read()
                 name = os.path.splitext(os.path.basename(filepath))[0]
-                if name == 'unknown':
+                if name == "unknown":
                     test_data.append((author, text))
                 else:
                     train_data.append((author, text))
     return train_data, test_data
 
 
-def get_vocab_size(corpus_dir,
-                  ngram_type,
-                  ngram_size,
-                  min_df=0.0,
-                  phase='train'):
+def get_vocab_size(corpus_dir, ngram_type, ngram_size, min_df=0.0, phase="train"):
     """
     Convenience function: fits a vectorizer with the specified
     parameters on the data under `corpus_dir/phase`, i.e. excluding
-    the 'unknown' texts. Returns the maximem number 
+    the 'unknown' texts. Returns the maximem number
     of features available, which is useful to test different
     settings for the vocabulary truncation.
 
@@ -106,14 +103,13 @@ def get_vocab_size(corpus_dir,
     """
 
     # preprocess:
-    train_data, _ = load_pan_dataset(corpus_dir+'/'+phase)
+    train_data, _ = load_pan_dataset(corpus_dir + "/" + phase)
     train_labels, train_documents = zip(*train_data)
-    
+
     # vectorize with maximum nb of features:
-    vectorizer = Vectorizer(mfi = sys.maxint,
-                            ngram_type = ngram_type,
-                            ngram_size = ngram_size,
-                            min_df = min_df)
+    vectorizer = Vectorizer(
+        mfi=sys.maxsize, ngram_type=ngram_type, ngram_size=ngram_size, min_df=min_df
+    )
     vectorizer.fit(train_documents)
 
     # returns max nb of features:
@@ -155,9 +151,9 @@ def load_ground_truth(filepath, labels):
 
     for line in open(filepath).readlines():
         problem_id, outcome = line.strip().split()
-        if outcome == 'Y':
+        if outcome == "Y":
             outcome = 1.0
-        elif outcome == 'N':
+        elif outcome == "N":
             outcome = 0.0
         ground_truth[problem_id] = outcome
 
@@ -183,7 +179,7 @@ def train_dev_split(train_X, train_y, random_state=1027):
     train_y : list of ints, default=None
         A list of int-encoded author labels (has to be the correct
         author for each document).
-    
+
     random_state : int, default=1027
         Used a seed for the random splitting.
 
@@ -198,7 +194,7 @@ def train_dev_split(train_X, train_y, random_state=1027):
     y_dev : list of ints, default=None
         A list of int-encoded author labels (actual, correct
         author for each document).
-    
+
     X_test : array-like [nb_problems, nb_features]
         The 2D matrix representing a set of test problems.
 
@@ -216,16 +212,15 @@ def train_dev_split(train_X, train_y, random_state=1027):
     """
 
     # split the original data:
-    X_dev, X_test, y_dev, y_test = train_test_split(train_X, train_y,
-                                        test_size=.5,
-                                        random_state=random_state,
-                                        stratify=train_y)
+    X_dev, X_test, y_dev, y_test = train_test_split(
+        train_X, train_y, test_size=0.5, random_state=random_state, stratify=train_y
+    )
     test_gt_scores = []
 
     # randomly select 1/2 of the idxs:
     np.random.seed(random_state)
     author_options = set(train_y)
-    rnd_idxs = np.random.choice(len(y_test), int(len(y_test)/2))
+    rnd_idxs = np.random.choice(len(y_test), int(len(y_test) / 2))
 
     for idx, y in enumerate(y_test):
         if idx in rnd_idxs:
@@ -240,8 +235,7 @@ def train_dev_split(train_X, train_y, random_state=1027):
             # indicate it's a positive example:
             test_gt_scores.append(1.0)
 
-    return X_dev, y_dev,\
-           X_test, y_test, test_gt_scores
+    return X_dev, y_dev, X_test, y_test, test_gt_scores
 
 
 def binarize(scores):
@@ -250,7 +244,7 @@ def binarize(scores):
     Takes a list of scores and binarizes it into strings.
     This is useful for running the ART scripts for testing
     the statistical difference between different outputs.
-    0.5 is used a the threshold for the separation of 
+    0.5 is used a the threshold for the separation of
     attribution (< 0.5 : 'N') and non-attribution cases
     (> 0.5 : 'Y'). All values equal 0.5 are assigned a
     separate 'X' label.
@@ -271,12 +265,9 @@ def binarize(scores):
     scs = []
     for sc in scores:
         if sc == 0.5:
-            scs.append('X')
+            scs.append("X")
         elif sc < 0.5:
-            scs.append('N')
+            scs.append("N")
         elif sc > 0.5:
-            scs.append('Y')
+            scs.append("Y")
     return scs
-
-                         
-    

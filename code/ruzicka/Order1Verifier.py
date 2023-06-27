@@ -25,19 +25,25 @@ from sklearn.neighbors import NearestCentroid
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
 
 # legacy: set metrics for using the theano functions
-import tensor
-GPU_METRICS = {'manhattan' : tensor.get_manhattan_fn(),
-               'euclidean' : tensor.get_euclidean_fn(),
-               'minmax' : tensor.get_minmax_fn()}
+from . import tensor
+
+GPU_METRICS = {
+    "manhattan": tensor.get_manhattan_fn(),
+    "euclidean": tensor.get_euclidean_fn(),
+    "minmax": tensor.get_minmax_fn(),
+}
 
 # import the pairwise distance functions:
-from test_metrics import minmax, manhattan, euclidean, common_ngrams, cosine
-CPU_METRICS = {'manhattan' : manhattan,
-               'euclidean' : euclidean,
-               'minmax' : minmax,
-               'cng' : common_ngrams,
-               'cosine' : cosine,
-               }
+from .test_metrics import minmax, manhattan, euclidean, common_ngrams, cosine
+
+CPU_METRICS = {
+    "manhattan": manhattan,
+    "euclidean": euclidean,
+    "minmax": minmax,
+    "cng": common_ngrams,
+    "cosine": cosine,
+}
+
 
 class Order1Verifier:
     """
@@ -56,8 +62,9 @@ class Order1Verifier:
 
     """
 
-    def __init__(self, metric='manhattan', base='profile',
-                 random_state=1066, device='cpu'):
+    def __init__(
+        self, metric="manhattan", base="profile", random_state=1066, device="cpu"
+    ):
         """
         Constructor.
 
@@ -81,7 +88,7 @@ class Order1Verifier:
             without bootstrapping; i.e. we simply check once
             whether the target author appears to be a test
             document's nearest neighbour among the imposters).
-    
+
         random_seed: int, default=1066
             Integer used for seeding the random streams.
 
@@ -91,14 +98,14 @@ class Order1Verifier:
 
         device: str, default='cpu'
             Indicating whether we use the theano- or JIT-
-            accelerated distance computations. (For the 
+            accelerated distance computations. (For the
             paper, we eventually used the numba-version
             throughout.)
-        
+
         """
 
         # some sanity checks:
-        if base != 'profile':
+        if base != "profile":
             raise NotImplementedError
         self.base = base
 
@@ -107,11 +114,10 @@ class Order1Verifier:
         self.rnd = np.random.RandomState(random_state)
 
         # check with we use JIT- or theano-metrics:
-        if device == 'cpu':
+        if device == "cpu":
             self.metric_fn = CPU_METRICS[metric]
-        elif device == 'gpu':
+        elif device == "gpu":
             self.metric_fn = GPU_METRICS[metric]
-
 
     def fit(self, X, y):
         """
@@ -139,29 +145,29 @@ class Order1Verifier:
 
         """
 
-        self.train_X = NearestCentroid().fit(X, y).centroids_ # mean centroids
+        self.train_X = NearestCentroid().fit(X, y).centroids_  # mean centroids
         self.train_y = np.array(range(self.train_X.shape[0]))
 
         nb_items = self.train_X.shape[0]
 
         # calculate all pairwise distances in data set:
         distances = []
-        idxs = range(self.train_X.shape[0])
+        # signatureless numba jit needs an array it can do type inference on,
+        # NDArray works.
+        idxs = np.array(range(self.train_X.shape[0]))
         for i, j in combinations(range(nb_items), 2):
-            distances.append(self.metric_fn(self.train_X[i],
-                                            self.train_X[j],
-                                            idxs))
+            distances.append(self.metric_fn(self.train_X[i], self.train_X[j], idxs))
 
-        # fit a 0-1 scaler on the distances:
-        distances = np.array(distances, dtype='float32').transpose()
-        distances = distances[~np.isnan(distances)]
+        # [don't] fit a 0-1 scaler on the distances:
+        distances = np.array(distances, dtype="float32").transpose()
+        distances = distances[~np.isnan(distances)].reshape(-1, 1)
         self.distance_scaler1 = StandardScaler().fit(distances)
-        distances = self.distance_scaler1.transform(distances.transpose())
-        self.distance_scaler2 = MinMaxScaler().fit(distances)
+        # distances = self.distance_scaler1.transform(distances)
+        # if we fit this here then the scaling in predict_proba will result in
+        # values outside (0,1), which is bad.
+        # self.distance_scaler2 = MinMaxScaler().fit(distances)
 
-
-    def dist_closest_target(self, test_vector, target_int,
-                            rnd_feature_idxs='all'):
+    def dist_closest_target(self, test_vector, target_int, rnd_feature_idxs=[]):
         """
 
         Given a `test_vector` and an integer representing a target
@@ -198,19 +204,18 @@ class Order1Verifier:
         """
 
         # use entire feature space if necessary:
-        if rnd_feature_idxs == 'all': # use entire feature space
-            rnd_feature_idxs = range(test_vector.shape[0])
+        if len(rnd_feature_idxs) == 0:  # use entire feature space
+            rnd_feature_idxs = np.array(range(test_vector.shape[0]))
 
         # calculate distance to nearest neighbour for the
         # target author (which potentially has only 1 item):
         distances = []
         for idx in range(len(self.train_y)):
             if self.train_y[idx] == target_int:
-                distances.append(self.metric_fn(self.train_X[idx],
-                                                test_vector,
-                                                rnd_feature_idxs))
+                distances.append(
+                    self.metric_fn(self.train_X[idx], test_vector, rnd_feature_idxs)
+                )
         return min(distances)
-
 
     def predict_proba(self, test_X, test_y):
         """
@@ -222,7 +227,7 @@ class Order1Verifier:
         take into account the feature values specified in
         `rnd_feature_idxs` (if the latter parameter is specified);
         else, we use the entire feature space. Note that we each time
-        sample a random number of imposters from the available training 
+        sample a random number of imposters from the available training
         documents, the number of which is specified by `nb_imposters`.
 
         Two routines are distinguished:
@@ -269,7 +274,7 @@ class Order1Verifier:
         ----------
         It is unwise to directly evaluate the probabilities
         returned by `predict_proba()` using the PAN evaluation
-        metrics, since these probabilities do not account for 
+        metrics, since these probabilities do not account for
         the strict 0.5 cutoff which is used by these metric.
         Use the `ScoreShifter()` in `score_shifting.py` to
         obtain a more sensible estimate in this respect.
@@ -278,10 +283,18 @@ class Order1Verifier:
 
         distances = []
         for test_vector, target_int in zip(test_X, test_y):
-            target_dist = self.dist_closest_target(test_vector=test_vector,
-                                                   target_int=target_int,
-                                                   rnd_feature_idxs='all')
+            target_dist = self.dist_closest_target(
+                test_vector=test_vector, target_int=target_int, rnd_feature_idxs=[]
+            )
             distances.append(target_dist)
-        
-        distances = np.array(distances, dtype='float32').transpose()
-        return 1.0 - self.distance_scaler2.transform(self.distance_scaler1.transform(distances))
+
+        # shape as one feature, many samples
+        distances = np.array(distances, dtype="float32").reshape(-1, 1)
+        # Use the distance ranges from the training data to get z-scores
+        d_standard = self.distance_scaler1.transform(distances)
+        # But scale to (0,1) for output based on the MinMax of the test data
+        # since this method outputs pseudo-probs by convention.
+        # output 1d array to match Order2Verifier
+        scaled = MinMaxScaler().fit_transform(d_standard).ravel()
+
+        return 1.0 - scaled

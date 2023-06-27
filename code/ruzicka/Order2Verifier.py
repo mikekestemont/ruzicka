@@ -23,19 +23,25 @@ import numpy as np
 from sklearn.neighbors import NearestCentroid
 
 # legacy: set metrics for using the theano functions
-import tensor
-GPU_METRICS = {'manhattan' : tensor.get_manhattan_fn(),
-               'euclidean' : tensor.get_euclidean_fn(),
-               'minmax' : tensor.get_minmax_fn()}
+from . import tensor
+
+GPU_METRICS = {
+    "manhattan": tensor.get_manhattan_fn(),
+    "euclidean": tensor.get_euclidean_fn(),
+    "minmax": tensor.get_minmax_fn(),
+}
 
 # import the pairwise distance functions:
-from test_metrics import minmax, manhattan, euclidean, common_ngrams, cosine
-CPU_METRICS = {'manhattan' : manhattan,
-               'euclidean' : euclidean,
-               'minmax' : minmax,
-               'cng' : common_ngrams,
-               'cosine' : cosine,
-               }
+from .test_metrics import minmax, manhattan, euclidean, common_ngrams, cosine
+
+CPU_METRICS = {
+    "manhattan": manhattan,
+    "euclidean": euclidean,
+    "minmax": minmax,
+    "cng": common_ngrams,
+    "cosine": cosine,
+}
+
 
 class Order2Verifier:
     """
@@ -54,9 +60,15 @@ class Order2Verifier:
 
     """
 
-    def __init__(self, metric='manhattan', base='profile',
-                 nb_bootstrap_iter=0, random_state=1066,
-                 rnd_prop=.5, device='cpu'):
+    def __init__(
+        self,
+        metric="manhattan",
+        base="profile",
+        nb_bootstrap_iter=0,
+        random_state=1066,
+        rnd_prop=0.5,
+        device="cpu",
+    ):
         """
         Constructor.
 
@@ -80,7 +92,7 @@ class Order2Verifier:
             without bootstrapping; i.e. we simply check once
             whether the target author appears to be a test
             document's nearest neighbour among the imposters).
-    
+
         random_seed: int, default=1066
             Integer used for seeding the random streams.
 
@@ -90,30 +102,29 @@ class Order2Verifier:
 
         device: str, default='cpu'
             Indicating whether we use the theano- or JIT-
-            accelerated distance computations. (For the 
+            accelerated distance computations. (For the
             paper, we eventually used the numba-version
             throughout.)
-        
+
         """
 
         # some sanity checks:
-        assert base in ('profile', 'instance')
+        assert base in ("profile", "instance")
         assert (rnd_prop > 0.0) and (rnd_prop < 1.0)
 
         # set rnd seeds:
         random.seed(1066)
         self.rnd = np.random.RandomState(random_state)
-        
+
         self.base = base
         self.nb_bootstrap_iter = nb_bootstrap_iter
         self.rnd_prop = rnd_prop
 
         # check with we use JIT- or theano-metrics:
-        if device == 'cpu':
+        if device == "cpu":
             self.metric_fn = CPU_METRICS[metric]
-        elif device == 'gpu':
+        elif device == "gpu":
             self.metric_fn = GPU_METRICS[metric]
-
 
     def fit(self, X, y):
         """
@@ -141,17 +152,15 @@ class Order2Verifier:
 
         """
 
-        if self.base == 'instance':
+        if self.base == "instance":
             self.train_X = X
             self.train_y = y
 
-        elif self.base == 'profile':
-            self.train_X = NearestCentroid().fit(X, y).centroids_ # mean centroids
+        elif self.base == "profile":
+            self.train_X = NearestCentroid().fit(X, y).centroids_  # mean centroids
             self.train_y = np.array(range(self.train_X.shape[0]))
 
-
-    def dist_closest_target(self, test_vector, target_int,
-                            rnd_feature_idxs='all'):
+    def dist_closest_target(self, test_vector, target_int, rnd_feature_idxs=[]):
         """
 
         Given a `test_vector` and an integer representing a target
@@ -188,7 +197,7 @@ class Order2Verifier:
         """
 
         # use entire feature space if necessary:
-        if rnd_feature_idxs == 'all': # use entire feature space
+        if len(rnd_feature_idxs) == 0:  # use entire feature space
             rnd_feature_idxs = range(test_vector.shape[0])
 
         # calculate distance to nearest neighbour for the
@@ -196,15 +205,14 @@ class Order2Verifier:
         distances = []
         for idx in range(len(self.train_y)):
             if self.train_y[idx] == target_int:
-                distances.append(self.metric_fn(self.train_X[idx],
-                                                test_vector,
-                                                rnd_feature_idxs))
+                distances.append(
+                    self.metric_fn(self.train_X[idx], test_vector, rnd_feature_idxs)
+                )
         return min(distances)
 
-
-    def dist_closest_non_target(self, test_vector, target_int, 
-                                    rnd_feature_idxs='all',
-                                    nb_imposters=None):
+    def dist_closest_non_target(
+        self, test_vector, target_int, rnd_feature_idxs=[], nb_imposters=None
+    ):
         """
 
         Given a `test_vector` and an integer representing a target
@@ -214,7 +222,7 @@ class Order2Verifier:
         take into account the feature values specified in
         `rnd_feature_idxs` (if the latter parameter is specified);
         else, we use the entire feature space. Note that we each time
-        sample a random number of imposters from the available training 
+        sample a random number of imposters from the available training
         documents, the number of which is specified by `nb_imposters`.
 
         Parameters
@@ -249,23 +257,23 @@ class Order2Verifier:
         """
 
         # use entire feature space if necessary:
-        if rnd_feature_idxs == 'all':
+        if len(rnd_feature_idxs) == 0:
             rnd_feature_idxs = range(test_vector.shape[0])
 
         # calculate distance to nearest neighbour for any
         # author whom is NOT the target author
         distances = []
-        non_target_idxs = [i for i in range(len(self.train_y))
-                              if self.train_y[i] != target_int]
+        non_target_idxs = [
+            i for i in range(len(self.train_y)) if self.train_y[i] != target_int
+        ]
 
         # randomly pick a subset of imposters:
         random.shuffle(non_target_idxs)
         for idx in non_target_idxs[:nb_imposters]:
-            distances.append(self.metric_fn(self.train_X[idx],
-                                            test_vector,
-                                            rnd_feature_idxs))
+            distances.append(
+                self.metric_fn(self.train_X[idx], test_vector, rnd_feature_idxs)
+            )
         return min(distances)
-
 
     def predict_proba(self, test_X, test_y, nb_imposters=0):
         """
@@ -277,7 +285,7 @@ class Order2Verifier:
         take into account the feature values specified in
         `rnd_feature_idxs` (if the latter parameter is specified);
         else, we use the entire feature space. Note that we each time
-        sample a random number of imposters from the available training 
+        sample a random number of imposters from the available training
         documents, the number of which is specified by `nb_imposters`.
 
         Two routines are distinguished:
@@ -324,7 +332,7 @@ class Order2Verifier:
         ----------
         It is unwise to directly evaluate the probabilities
         returned by `predict_proba()` using the PAN evaluation
-        metrics, since these probabilities do not account for 
+        metrics, since these probabilities do not account for
         the strict 0.5 cutoff which is used by these metric.
         Use the `ScoreShifter()` in `score_shifting.py` to
         obtain a more sensible estimate in this respect.
@@ -332,38 +340,48 @@ class Order2Verifier:
         """
 
         distances = []
-        if not self.nb_bootstrap_iter: # naive verification:
+        if not self.nb_bootstrap_iter:  # naive verification:
             for test_vector, target_int in zip(test_X, test_y):
-                    target_dist = self.dist_closest_target(test_vector=test_vector,
-                                                           target_int=target_int)
-                    non_target_dist = self.dist_closest_non_target(test_vector=test_vector,
-                                                           target_int=target_int)
-                    if target_dist < non_target_dist:
-                        distances.append(1.0)
-                    else:
-                        distances.append(0.0)
-                        
-        else: # bootstrapped, imposter-based, verification:
+                target_dist = self.dist_closest_target(
+                    test_vector=test_vector, target_int=target_int
+                )
+                non_target_dist = self.dist_closest_non_target(
+                    test_vector=test_vector, target_int=target_int
+                )
+                if target_dist < non_target_dist:
+                    distances.append(1.0)
+                else:
+                    distances.append(0.0)
+
+        else:  # bootstrapped, imposter-based, verification:
             cnt = 0
             for test_vector, target_int in zip(test_X, test_y):
                 cnt += 1
                 if cnt % 10 == 0:
-                    print('\t - # test documents processed:', cnt, 'out of', len(test_y))
+                    print(
+                        "\t - # test documents processed:", cnt, "out of", len(test_y)
+                    )
 
                 bootstrap_score = 0.0
                 for i in range(self.nb_bootstrap_iter):
                     # select random features:
-                    rnd_feature_idxs = self.rnd.randint(self.train_X.shape[1],
-                                                     size=int(self.train_X.shape[1] * self.rnd_prop))
-                    target_dist = self.dist_closest_target(test_vector=test_vector,
-                                                           target_int=target_int,
-                                                           rnd_feature_idxs=rnd_feature_idxs)
-                    non_target_dist = self.dist_closest_non_target(test_vector=test_vector,
-                                                                   target_int=target_int,
-                                                                   nb_imposters=nb_imposters,
-                                                                   rnd_feature_idxs=rnd_feature_idxs)
+                    rnd_feature_idxs = self.rnd.randint(
+                        self.train_X.shape[1],
+                        size=int(self.train_X.shape[1] * self.rnd_prop),
+                    )
+                    target_dist = self.dist_closest_target(
+                        test_vector=test_vector,
+                        target_int=target_int,
+                        rnd_feature_idxs=rnd_feature_idxs,
+                    )
+                    non_target_dist = self.dist_closest_non_target(
+                        test_vector=test_vector,
+                        target_int=target_int,
+                        nb_imposters=nb_imposters,
+                        rnd_feature_idxs=rnd_feature_idxs,
+                    )
                     if target_dist < non_target_dist:
-                        bootstrap_score += (1.0 / self.nb_bootstrap_iter)
+                        bootstrap_score += 1.0 / self.nb_bootstrap_iter
                 distances.append(bootstrap_score)
 
-        return np.array(distances, dtype='float32')
+        return np.array(distances, dtype="float32")
